@@ -14,7 +14,8 @@ STARTUP_FOLDER = (
     / "Startup"
 )
 
-SHORTCUT_NAME = "MMMUT WiFi Auto Login.lnk"
+from metadata import APP_NAME
+SHORTCUT_NAME = f"{APP_NAME}.lnk"
 
 
 def add_to_startup():

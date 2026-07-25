@@ -1,8 +1,9 @@
 from pathlib import Path
 import json
 import os
+from metadata import APP_NAME
 
-APP_DIR = Path(os.getenv("LOCALAPPDATA")) / "MMMUT WiFi Auto Login"
+APP_DIR = Path(os.getenv("LOCALAPPDATA")) / APP_NAME
 APP_DIR.mkdir(parents=True, exist_ok=True)
 
 CONFIG_FILE = APP_DIR / "config.json"

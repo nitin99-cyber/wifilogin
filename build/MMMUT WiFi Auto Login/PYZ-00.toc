@@ -903,6 +903,9 @@
    'C:\\Users\\Nitin '
    'mmmut\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\lzma.py',
    'PYMODULE'),
+  ('metadata',
+   'C:\\Users\\Nitin mmmut\\Desktop\\wifi_auto-login\\metadata.py',
+   'PYMODULE'),
   ('mimetypes',
    'C:\\Users\\Nitin '
    'mmmut\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\mimetypes.py',
