@@ -1,9 +1,11 @@
-import logging
+from pathlib import Path
+from datetime import datetime
 
-logging.basicConfig(
-    filename="wifi_login.log",
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
-)
+LOG_FILE = Path("wifi_login.log")
 
-logger = logging.getLogger(__name__)
+
+def log(message):
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(
+            f"[{datetime.now():%Y-%m-%d %H:%M:%S}] {message}\n"
+        )
