@@ -1,15 +1,22 @@
-import json
 from pathlib import Path
+import json
+import os
 
-CONFIG_FILE = Path("config.json")
+APP_DIR = Path(os.getenv("LOCALAPPDATA")) / "MMMUT WiFi Auto Login"
+APP_DIR.mkdir(parents=True, exist_ok=True)
+
+CONFIG_FILE = APP_DIR / "config.json"
+
+DEFAULT_CONFIG = {
+    "setup_completed": False,
+    "startup_enabled": False
+}
 
 
 def load_config():
     if not CONFIG_FILE.exists():
-        return {
-            "setup_completed": False,
-            "startup_enabled": False
-        }
+        save_config(DEFAULT_CONFIG)
+        return DEFAULT_CONFIG.copy()
 
     with open(CONFIG_FILE, "r") as f:
         return json.load(f)
