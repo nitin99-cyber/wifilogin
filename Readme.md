@@ -31,6 +31,7 @@
 - [Building from Source](#building-from-source)
 - [Configuration](#configuration)
 - [Privacy & Security](#privacy--security)
+- [Developer](#developer)
 - [License](#license)
 
 ---
@@ -139,15 +140,19 @@ That's how a 10-line script turned into a full desktop application.
 
 ---
 
-### Problem 5: Finding the Best Wi-Fi Access Point
+### Problem 5: Multiple Campus Wi-Fi Access Points
 
-**What happened:** MMMUT campus has multiple Wi-Fi access points with different SSIDs (like `MMMUT_LAN`, `MMMUT_HOSTEL`, `mmmut_5g`). Sometimes the laptop would connect to a weak access point even when a stronger one was available.
+**What happened:** MMMUT campus has many Wi-Fi access points with different SSIDs — hostel Wi-Fi uses the hostel name, classrooms have different names with "MMMUT", etc. Sometimes the laptop would connect to a weak access point even when a stronger one was available. Maintaining a hardcoded list of SSID names was impractical because new access points are added frequently.
 
-**Solution:** I built a Wi-Fi scanner (`wifi_scanner.py`) that:
-1. Runs `netsh wlan show networks mode=bssid` to list all visible networks with their signal strengths.
-2. Filters for networks containing "mmmut" in the name (case-insensitive).
-3. Sorts them by signal strength (strongest first).
-4. Connects to the strongest one using `netsh wlan connect`.
+**Solution:** Two-pronged approach:
+
+1. **Portal-based detection:** Instead of checking SSID names, the app checks if the Cyberoam portal at `172.16.1.3:8090` is reachable. All campus access points (regardless of SSID name) route through this same portal. If the portal responds → you're on MMMUT network → login. This works with every access point automatically — zero maintenance.
+
+2. **Wi-Fi scanner module** (`wifi_scanner.py`): For active Wi-Fi selection, I built a scanner that:
+   - Runs `netsh wlan show networks mode=bssid` to list all visible networks with signal strengths
+   - Filters for networks containing "mmmut" in the name (case-insensitive)
+   - Sorts by signal strength (strongest first)
+   - Connects to the strongest one using `netsh wlan connect`
 
 ---
 
@@ -155,7 +160,63 @@ That's how a 10-line script turned into a full desktop application.
 
 **What happened:** When the user clicked "Save & Connect" in the GUI, the app would freeze for several seconds while it scanned Wi-Fi networks and attempted login. Windows would show "(Not Responding)" in the title bar.
 
-**Solution:** I moved all network operations to a **background thread** using Python's `threading` module. The GUI runs on the main thread (Tkinter's `mainloop()`), while Wi-Fi scanning and login happen concurrently on a separate thread. Status updates are safely pushed back to the UI using Tkinter's `after()` method.
+**Solution:** I moved all network operations to a **background thread** using Python's `threading` module. The GUI runs on the main thread (Tkinter's `mainloop()`), while Wi-Fi scanning and login happen concurrently on a separate thread. Status updates are safely pushed back to the UI using Tkinter's `after()` method — the user sees live progress: "Detecting MMMUT network..." → "● Portal detected" → "✓ Login successful!"
+
+---
+
+### Problem 7: App Not Opening When Clicked
+
+**What happened:** After setup was complete, double-clicking the app or launching it from the Start Menu did nothing visible. The app appeared to be broken — no window, no feedback, no indication it was running.
+
+**Root cause:** The app's entry point (`app.py`) checked `config["setup_completed"]` — if it was `True`, it ran the silent auto-login flow and exited. There was no way for the user to re-open the GUI to change credentials, toggle auto-start, or test the connection.
+
+**Solution:** I introduced a **`--background` flag** to separate the two modes:
+- **No flags (double-click / Start Menu):** Always opens the Setup/Management GUI window — regardless of whether setup has been completed.
+- **`--background` flag (Registry startup):** Runs the silent auto-login flow with no window.
+
+---
+
+### Problem 8: Auto-Login Not Enabled by Default After Installation
+
+**What happened:** After installing the app, auto-login wasn't active until the user opened the app and explicitly saved credentials with the startup checkbox checked.
+
+**Solution:** A three-part fix:
+1. Changed `DEFAULT_CONFIG` so `startup_enabled` defaults to `True`.
+2. Updated the **Inno Setup installer** to automatically write the Registry Run key during installation with the `--background` flag.
+3. Added an `[UninstallRun]` section that removes any legacy scheduled task on uninstall.
+
+Now, the moment the installer finishes, auto-login is already registered. The user just needs to open the app once to enter their credentials.
+
+---
+
+### Problem 9: Login Taking 30+ Seconds
+
+**What happened:** The app was supposed to log in automatically at boot, but it was taking 30+ seconds before internet became available.
+
+**Root cause:** Extremely conservative timeouts: internet check at 5s, portal check at 3s, login POST at 10s, plus the portal retry loop could waste 30 seconds polling.
+
+**Solution:** Aggressively reduced all timeouts since the Cyberoam portal is on the local network and responds in milliseconds:
+
+| Setting | Before | After |
+|---------|--------|-------|
+| Internet check timeout | 5s | **1s** |
+| Portal check timeout | 3s | **0.5s** |
+| Portal retries | 30 × 1s | **5 × 0.3s** |
+| Login POST timeout | 10s | **2s** |
+
+The entire flow now completes in ~4 seconds.
+
+---
+
+### Problem 10: No Way to Manage the App After Setup
+
+**What happened:** Once credentials were saved, there was no way to change them, delete them, or toggle auto-start without editing config files manually.
+
+**Solution:** I turned the setup window into a **lightweight control panel** for returning users:
+- **Pre-filled fields** — existing credentials are loaded and displayed
+- **Delete Credentials** button — removes all accounts from Windows Credential Manager with a confirmation dialog
+- **Auto-Start toggle** — enable/disable the Registry startup entry directly from the UI
+- **Status display** — shows live connection progress when testing
 
 ---
 
@@ -165,10 +226,15 @@ That's how a 10-line script turned into a full desktop application.
 - **Smart Credential Failover** — If Account 1 hits the max login limit, instantly tries Account 2.
 - **Secure Password Storage** — Uses Windows Credential Manager (encrypted, OS-level security).
 - **Intelligent Wi-Fi Selection** — Scans all available MMMUT networks and picks the strongest signal.
+- **Live Status Display** — See real-time progress: detecting network → portal found → logging in → success.
+- **Credential Management** — Add, update, or delete saved credentials from the GUI.
+- **Auto-Start Toggle** — Enable or disable startup from the app without touching system settings.
 - **No Admin Required** — Everything works with standard user privileges.
 - **Lightweight** — The entire background process completes in ~4 seconds and uses minimal resources.
-- **Clean GUI** — Simple setup window for managing credentials and startup preferences.
 - **Proper Windows Integration** — Shows in Task Manager Startup Apps, installs to Program Files, has proper uninstaller.
+- **Professional Installer** — Inno Setup installer with Start Menu, Desktop shortcut, and clean uninstall.
+- **About & Privacy** — Built-in About dialog with developer info, feature list, and privacy policy.
+- **Open Source** — Full source code available on GitHub under MIT license.
 
 ---
 
@@ -224,9 +290,9 @@ Registry Run Key launches app.exe --background
 wifi_auto-login/
 │
 ├── app.py                  # Entry point — routes to GUI or background mode
-├── setup.py                # Tkinter GUI — credential form, status display
+├── setup.py                # Tkinter GUI — credential form, status display, management
 ├── login.py                # HTTP POST to Cyberoam portal, XML response parsing
-├── credential_manager.py   # Read/write credentials via Windows Credential Manager
+├── credential_manager.py   # Read/write/delete credentials via Windows Credential Manager
 ├── config_manager.py       # JSON config file management (setup state, preferences)
 ├── startup.py              # Windows Registry auto-startup registration
 ├── wifi_scanner.py         # Scan Wi-Fi networks, connect to strongest MMMUT AP
@@ -247,6 +313,7 @@ wifi_auto-login/
 │   ├── index.html
 │   ├── style.css
 │   ├── script.js
+│   ├── README.md
 │   └── assets/
 │
 ├── MMMUT WiFi Auto Login.spec   # PyInstaller build configuration
@@ -334,7 +401,7 @@ The app stores its configuration at:
 | Key | Type | Description |
 |-----|------|-------------|
 | `setup_completed` | `bool` | Whether the user has saved credentials at least once |
-| `startup_enabled` | `bool` | Whether auto-startup is enabled |
+| `startup_enabled` | `bool` | Whether auto-startup is enabled (defaults to `true`) |
 
 Credentials are stored in the **Windows Credential Manager** under the service name `MMMUT-WIFI-AUTOLOGIN`.
 
@@ -352,6 +419,18 @@ Logs are written to:
 - **Passwords are never stored in plain text.** They are encrypted by Windows Credential Manager using your OS login session key.
 - **No admin privileges required.** The app runs entirely within standard user permissions.
 - **Open source.** Every line of code is auditable in this repository.
+
+---
+
+## Developer
+
+**Nitin Deep**
+B.Tech CSE '29 — MMMUT Gorakhpur
+
+- **Email:** nitincsemmmut@gmail.com
+- **GitHub:** [nitin99-cyber](https://github.com/nitin99-cyber)
+
+> Please leave a review and stay updated for the next version with rich feature support!
 
 ---
 

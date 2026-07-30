@@ -42,7 +42,7 @@ InfoBeforeFile=..\README.txt
 #endif
 
 [Tasks]
-; Desktop shortcut task, unchecked by default
+; Desktop shortcut task, checked by default
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
