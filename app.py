@@ -1,9 +1,6 @@
 """
-MMMUT WiFi Auto Login -- Application Entry Point
-
-Behaviour:
-  * --background  ->  Silent auto-login (used by startup at boot)
-  * No flags      ->  Opens the Setup / Management GUI window
+   --background   Silent auto-login (used by startup at boot)
+   No flags       Opens the Setup / Management GUI window
 """
 
 import sys
@@ -35,7 +32,7 @@ _MAX_LOGIN_KEYWORDS = [
 ]
 
 
-def _is_max_login_error(message):
+def _is_max_login_error(message: str) -> bool:
     """Check if a login response message indicates max login limit reached."""
     if not message:
         return False
@@ -43,19 +40,19 @@ def _is_max_login_error(message):
     return any(kw in lower for kw in _MAX_LOGIN_KEYWORDS)
 
 
-def elapsed(start):
+def elapsed(start: float) -> str:
     """Return elapsed time since start as a formatted string."""
     return f"{time.perf_counter() - start:.2f}"
 
 
 def run_background():
-    """Silent auto-login flow -- runs instantly at Windows startup."""
+    """Silent auto-login flow — runs instantly at Windows startup."""
     start = time.perf_counter()
     log(f"Background auto-login started (+{elapsed(start)}s)")
 
     config = load_config()
 
-    # First run -> open setup wizard (needs user input)
+    # First run → open setup wizard (needs user input)
     if not config["setup_completed"]:
         log("First run detected. Opening setup window.")
         setup.run()
@@ -118,12 +115,12 @@ def run_background():
             log(f"Login successful using {username1} (+{elapsed(start)}s)")
             return
 
-        # If max login limit reached and we have a second account -> try it
+        # If max login limit reached and we have a second account → try it
         if _is_max_login_error(message) and len(accounts) > 1:
             log(f"Max login limit reached for {username1}. "
                 f"Switching to backup account... (+{elapsed(start)}s)")
         elif len(accounts) > 1:
-            # Any other failure -- still try second account as fallback
+            # Any other failure — still try second account as fallback
             log(f"Login failed for {username1}: {message}. "
                 f"Trying backup account... (+{elapsed(start)}s)")
         else:
@@ -161,7 +158,7 @@ def run_background():
 
 
 def main():
-    """Entry point -- decide between GUI and silent mode."""
+    """Entry point — decide between GUI and silent mode."""
     if "--background" in sys.argv:
         run_background()
     else:
