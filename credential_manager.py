@@ -18,7 +18,7 @@ def save_account(index, username, password):
 
 
 def load_accounts():
-
+    """Load all saved accounts from Windows Credential Manager."""
     accounts = []
 
     for i in range(1, 3):
@@ -32,3 +32,12 @@ def load_accounts():
             accounts.append(json.loads(data))
 
     return accounts
+
+
+def delete_all_accounts():
+    """Remove all saved accounts from Windows Credential Manager."""
+    for i in range(1, 3):
+        try:
+            keyring.delete_password(SERVICE_NAME, f"account_{i}")
+        except keyring.errors.PasswordDeleteError:
+            pass  # Account didn't exist, that's fine

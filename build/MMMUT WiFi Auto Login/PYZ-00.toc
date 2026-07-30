@@ -2136,6 +2136,9 @@
    'C:\\Users\\Nitin '
    'mmmut\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\webbrowser.py',
    'PYMODULE'),
+  ('wifi_scanner',
+   'C:\\Users\\Nitin mmmut\\Desktop\\wifi_auto-login\\wifi_scanner.py',
+   'PYMODULE'),
   ('win32com',
    'C:\\Users\\Nitin '
    'mmmut\\Desktop\\wifi_auto-login\\.venv\\Lib\\site-packages\\win32com\\__init__.py',

@@ -17,7 +17,7 @@ def login(username, password):
     response = requests.post(
         LOGIN_URL,
         data=payload,
-        timeout=10,
+        timeout=2,
     )
 
     root = ET.fromstring(response.text)

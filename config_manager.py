@@ -10,7 +10,7 @@ CONFIG_FILE = APP_DIR / "config.json"
 
 DEFAULT_CONFIG = {
     "setup_completed": False,
-    "startup_enabled": False
+    "startup_enabled": True
 }
 
 
