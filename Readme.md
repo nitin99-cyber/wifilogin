@@ -2,7 +2,7 @@
   <img src="assets/icon.ico" alt="MMMUT WiFi Auto Login" width="80"/>
 </p>
 
-<h1 align="center">MMMUT WiFi Auto Login</h1>
+<h1 align="center"> WiFi Auto Login</h1>
 
 <p align="center">
   <b>Never manually login to college Wi-Fi again.</b><br/>
