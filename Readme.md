@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Never manually login to college Wi-Fi again.</b><br/>
-  A lightweight Windows utility that automatically connects to the MMMUT campus network<br/>and logs into the Cyberoam captive portal — silently, instantly, every time you boot.
+  A lightweight Windows utility that automatically connects to the MMMUT campus network<br/>and connects to the login portal — silently, instantly, every time you boot.
 </p>
 
 <p align="center">
@@ -38,35 +38,36 @@
 
 ## The Story — Why I Built This
 
-Every student at **MMMUT (Madan Mohan Malaviya University of Technology)** knows the daily frustration:
+Every time when i have to connect to the college network, i had to input my credentials on login page then connect to the wifi which consumes little bit of time.
 
-1. You open your laptop.
-2. Windows connects to the campus Wi-Fi (like `MMMUT_LAN` or `MMMUT_HOSTEL`).
+
+2. Windows connects to the campus Wi-Fi (like `MMMUT` or `MMMUT_RAMAN`).
 3. But there's no internet yet — you're trapped behind a **Cyberoam captive portal**.
-4. You have to open a browser, wait for the portal page to load at `172.16.1.3:8090`, type your username and password, and hit Login.
-5. You do this **every single time** — after every reboot, every sleep, every time the session expires.
-6. Worse, if your phone is already logged in, you hit the **"Maximum Login Limit Reached"** error, and now you have to go logout from your phone first or use a different account.
+4. I have to open a browser, wait for the portal page to load at `172.16.1.3:8090`, type your username and password, and hit Login.
+5. I ad to  do this **every single time** — after every reboot,  every time the session expires.
+6. Worse, if your phone is already logged in, you hit the **"Maximum Login Limit Reached"** error, and now you have to  use a different account, which sometimes causes frustration.
 
-I got tired of doing this 5-10 times a day. As a Computer Science student, I thought — if I'm going to spend 4 years on this campus, the least I can do is automate the 30 seconds of annoyance that greets me every single morning.
+I got tired of doing this on daily basis and as a Computer Science student, the least I can do is to automate the 30 seconds of annoyance that greets me every every time session expire.
 
 **So I built this app.**
 
-The goal was simple: the moment my laptop boots up, before I even touch the keyboard, the app should silently connect to the strongest MMMUT Wi-Fi, login to the portal, and give me working internet — all in the background, with zero interaction.
+The goal was simple: the moment my system boots up, before I even touch the keyboard, the app should silently connect to the strongest MMMUT Wi-Fi, login to the portal, and give me working internet — all in the background, with zero interaction.
 
 ---
 
 ## How I Found the Solution
 
-The Cyberoam portal at `172.16.1.3:8090` is a standard web form. But to automate it, I needed to understand what happens **under the hood** when you click the "Login" button on that webpage.
+The campus portal at `172.16.1.3:8090` is a standard web form. But to automate it, I first understood its working, **under the hood** when you click the "Login" button on that webpage.
 
 ### Step 1: Inspecting the Network Request
 
-I opened **Chrome DevTools** (`F12` → **Network** tab), logged in manually on the portal, and watched the HTTP traffic. I discovered:
+I opened **Chrome DevTools** , logged in manually on the portal, and watched the HTTP traffic.
+ I discovered something which made my work easier:
 
 - The browser sends an **HTTP POST** request to `http://172.16.1.3:8090/login.xml`
 - The form data contains:
   ```
-  mode: 191
+  
   username: <your_username>
   password: <your_password>
   a: <unix_timestamp_in_milliseconds>
@@ -76,7 +77,7 @@ I opened **Chrome DevTools** (`F12` → **Network** tab), logged in manually on 
   ```xml
   <requestresponse>
     <status>LIVE</status>
-    <message>You are signed in as mit2022xxxxxx</message>
+    <message>You are signed in as cse202xxxxxx</message>
   </requestresponse>
   ```
   Or on failure:
@@ -89,18 +90,18 @@ I opened **Chrome DevTools** (`F12` → **Network** tab), logged in manually on 
 
 ### Step 2: Reproducing It in Python
 
-Once I knew the exact URL, payload, and expected response, I wrote a simple Python script using the `requests` library to replicate the browser's POST request. It worked on the first try. That 10-line script became the foundation of this entire application.
+Once I knew the exact URL, payload, and expected response, I wrote a simple Python script using the `requests` library to replicate the browser's POST request. It worked on the first try. That 27-line script became the foundation of this entire application.
 
 ### Step 3: Making It a Real Application
 
-A script that runs in the terminal isn't useful for everyday students. I needed:
+A script that runs in the terminal isn't useful for everyone so i decided to scale  it further, for that  I needed:
 - A **GUI** so users can enter their credentials without touching code.
 - **Secure storage** so passwords aren't saved in plain text files.
 - **Auto-startup** so it runs silently every time Windows boots.
 - A **standalone .exe** so users don't need to install Python.
 - An **installer** so it feels like a real Windows application.
 
-That's how a 10-line script turned into a full desktop application.
+That's how a  script of few lines  turned into a full desktop application.
 
 ---
 
@@ -108,9 +109,9 @@ That's how a 10-line script turned into a full desktop application.
 
 ### Problem 1: App Not Starting on Windows Boot
 
-**What happened:** I initially used Windows Task Scheduler (`schtasks /Create /SC ONLOGON`) to register the app for auto-startup. It seemed to work during development, but on real student laptops, the task was never created. The app wasn't showing up in Task Manager's "Startup Apps" tab either.
+**What happened:** I initially used Windows Task Scheduler (`schtasks /Create /SC ONLOGON`) to register the app for auto-startup. It seemed to work during development, but while testing , the task was never created. The app wasn't showing up in Task Manager's "Startup Apps" tab either.
 
-**Root cause:** Creating an `ONLOGON` scheduled task requires **Administrator privileges**. Students run the app as a standard user, so the `schtasks` command was silently failing (returning a non-zero exit code that I wasn't surfacing).
+**Root cause:** Creating an `ONLOGON` scheduled task requires **Administrator privileges**.  the app was running as a standard user, so the `schtasks` command was silently failing.
 
 **Solution:** I switched to the **Windows Registry Run Key** method. By writing to `HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`, the app registers itself for auto-startup without needing admin rights. This is the same mechanism used by apps like Discord, Spotify, and Steam. It also automatically appears in Task Manager → Startup Apps, giving users full control.
 
@@ -118,9 +119,9 @@ That's how a 10-line script turned into a full desktop application.
 
 ### Problem 2: "Maximum Login Limit Reached"
 
-**What happened:** Students often have their phone connected to the same portal account. When the app tried to login from the laptop, the portal rejected it with "You've reached the maximum login limit."
+**What happened:** Students often have their other devices connected to the same portal account. When the app tried to login , the portal rejected it with "You've reached the maximum login limit."
 
-**Solution:** I implemented a **smart credential failover** system. The app accepts two sets of credentials (Account 1 and Account 2). It always tries Account 1 first. If the portal response message contains keywords like "maximum login limit" or "already logged in", the app immediately and automatically retries with Account 2 — no user intervention required.
+**Solution:** I implemented a **smart credential failover** system. The app accepts two sets of credentials (Account 1 and Account 2). It always tries Account 1 first. If the portal response message contains keywords like "maximum login limit", the app immediately and automatically retries with Account 2 — no user intervention required.
 
 ---
 
@@ -134,9 +135,9 @@ That's how a 10-line script turned into a full desktop application.
 
 ### Problem 4: Storing Passwords Securely
 
-**What happened:** Early versions saved credentials in a `config.json` file in plain text. This was a serious security issue — anyone with access to the file could read the passwords.
+**What happened:** In python script and version 1.0.0  I was saving  credentials in a `config.json` file in plain text. This was a serious security issue — anyone with access to the file could read the passwords.
 
-**Solution:** I switched to the `keyring` library, which interfaces directly with the **Windows Credential Manager** (the same vault that stores your Windows login password, browser saved passwords, etc.). Passwords are encrypted by the operating system using the user's login session key. No plain-text credentials exist anywhere in the app's files.
+**Solution:** I switched to the `keyring` library in python, which interfaces directly with the **Windows Credential Manager** (the same vault that stores your Windows login password, browser saved passwords, etc.). Passwords are encrypted by the operating system using the user's login session key. No plain-text credentials exist anywhere in the app's files.
 
 ---
 
@@ -150,7 +151,7 @@ That's how a 10-line script turned into a full desktop application.
 
 2. **Wi-Fi scanner module** (`wifi_scanner.py`): For active Wi-Fi selection, I built a scanner that:
    - Runs `netsh wlan show networks mode=bssid` to list all visible networks with signal strengths
-   - Filters for networks containing "mmmut" in the name (case-insensitive)
+   - Filters for networks containing "mmmut" in the name.
    - Sorts by signal strength (strongest first)
    - Connects to the strongest one using `netsh wlan connect`
 
@@ -158,9 +159,9 @@ That's how a 10-line script turned into a full desktop application.
 
 ### Problem 6: UI Freezing During Network Operations
 
-**What happened:** When the user clicked "Save & Connect" in the GUI, the app would freeze for several seconds while it scanned Wi-Fi networks and attempted login. Windows would show "(Not Responding)" in the title bar.
+**What happened:** When i  clicked "Save & Connect" in the GUI, the app would freeze for several seconds while it scanned Wi-Fi networks and attempted login. Windows would show "(Not Responding)" in the title bar.
 
-**Solution:** I moved all network operations to a **background thread** using Python's `threading` module. The GUI runs on the main thread (Tkinter's `mainloop()`), while Wi-Fi scanning and login happen concurrently on a separate thread. Status updates are safely pushed back to the UI using Tkinter's `after()` method — the user sees live progress: "Detecting MMMUT network..." → "● Portal detected" → "✓ Login successful!"
+**Solution:** I moved all network operations to a **background thread** using Python's `threading` module. The GUI runs on the main thread (Tkinter's `mainloop()`), while Wi-Fi scanning and login happen concurrently on a separate thread. Status updates are safely pushed back to the UI using Tkinter's `after()` method — the user sees live progress: "Detecting MMMUT network..." -> "Portal detected" -> " Login successful!"
 
 ---
 
@@ -197,14 +198,8 @@ Now, the moment the installer finishes, auto-login is already registered. The us
 
 **Solution:** Aggressively reduced all timeouts since the Cyberoam portal is on the local network and responds in milliseconds:
 
-| Setting | Before | After |
-|---------|--------|-------|
-| Internet check timeout | 5s | **1s** |
-| Portal check timeout | 3s | **0.5s** |
-| Portal retries | 30 × 1s | **5 × 0.3s** |
-| Login POST timeout | 10s | **2s** |
 
-The entire flow now completes in ~4 seconds.
+The entire flow now completes in almost 4 seconds,depending on the OS and hardware.
 
 ---
 
@@ -234,7 +229,7 @@ The entire flow now completes in ~4 seconds.
 - **Proper Windows Integration** — Shows in Task Manager Startup Apps, installs to Program Files, has proper uninstaller.
 - **Professional Installer** — Inno Setup installer with Start Menu, Desktop shortcut, and clean uninstall.
 - **About & Privacy** — Built-in About dialog with developer info, feature list, and privacy policy.
-- **Open Source** — Full source code available on GitHub under MIT license.
+- **Open Source** — Full source code available on GitHub. 
 
 ---
 
@@ -349,7 +344,7 @@ wifi_auto-login/
 3. The setup window will open. Enter your MMMUT portal credentials and click **Save & Connect**.
 4. That's it. The app will now auto-login every time you boot your laptop.
 
-### For Developers
+### For OG Developers
 ```bash
 # Clone the repository
 git clone https://github.com/nitin99-cyber/mmmutwifilogin.git
