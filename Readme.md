@@ -36,16 +36,16 @@
 
 ---
 
-## The Story — Why I Built This
+## The Story - Why I Built This
 
 Every time when i have to connect to the college network, i had to input my credentials on login page then connect to the wifi which consumes little bit of time.
 
 
-2. Windows connects to the campus Wi-Fi (like `MMMUT` or `MMMUT_RAMAN`).
-3. But there's no internet yet — you're trapped behind a **Cyberoam captive portal**.
-4. I have to open a browser, wait for the portal page to load at `172.16.1.3:8090`, type your username and password, and hit Login.
-5. I ad to  do this **every single time** — after every reboot,  every time the session expires.
-6. Worse, if your phone is already logged in, you hit the **"Maximum Login Limit Reached"** error, and now you have to  use a different account, which sometimes causes frustration.
+1. Windows connects to the campus Wi-Fi (like `MMMUT` or `MMMUT_RAMAN`).
+2. But there's no internet yet — you're trapped behind a **Cyberoam captive portal**.
+3. I have to open a browser, wait for the portal page to load at `172.16.1.3:8090`, type your username and password, and hit Login.
+4. I ad to  do this **every single time** — after every reboot,  every time the session expires.
+5. Worse, if your phone is already logged in, you hit the **"Maximum Login Limit Reached"** error, and now you have to  use a different account, which sometimes causes frustration.
 
 I got tired of doing this on daily basis and as a Computer Science student, the least I can do is to automate the 30 seconds of annoyance that greets me every every time session expire.
 
@@ -429,8 +429,4 @@ B.Tech CSE '29 — MMMUT Gorakhpur
 
 ---
 
-## License
-
-MIT License — © 2026 Nitin Deep
-
-Made with ❤️ for MMMUT students.
+ © 2026 Nitin Deep
