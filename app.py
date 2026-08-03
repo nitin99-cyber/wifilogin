@@ -5,6 +5,7 @@
 
 import sys
 import time
+import threading
 
 from config_manager import load_config
 from credential_manager import load_accounts
@@ -14,13 +15,14 @@ from wifi_scanner import connect_to_best_mmmut
 from login import login
 
 import setup
+import popup
 from logger import log
 
 # Boot-time retry configuration
-MAX_PORTAL_RETRIES = 10       # More retries at boot (WiFi takes time)
+MAX_PORTAL_RETRIES = 15       # More retries at boot (WiFi takes time)
 RETRY_INTERVAL = 1            # Seconds between portal detection retries
 WIFI_SETTLE_DELAY = 1         # Wait after WiFi connect before portal check
-BOOT_INITIAL_WAIT = 2         # Initial wait for WiFi adapter to initialize
+BOOT_INITIAL_WAIT = 5         # Initial wait for WiFi adapter to initialize
 
 # Keywords that indicate the login limit has been reached
 _MAX_LOGIN_KEYWORDS = [
@@ -45,24 +47,16 @@ def elapsed(start: float) -> str:
     return f"{time.perf_counter() - start:.2f}"
 
 
-def run_background():
-    """Silent auto-login flow — runs instantly at Windows startup."""
+def _background_login_flow():
+    """Run the full auto-login sequence. Returns (success: bool, reason: str)."""
     start = time.perf_counter()
     log(f"Background auto-login started (+{elapsed(start)}s)")
-
-    config = load_config()
-
-    # First run → open setup wizard (needs user input)
-    if not config["setup_completed"]:
-        log("First run detected. Opening setup window.")
-        setup.run()
-        return
 
     # Step 1: Quick internet check
     log(f"Checking internet... (+{elapsed(start)}s)")
     if is_connected():
         log(f"Internet already available. Exiting. (+{elapsed(start)}s)")
-        return
+        return True, "Already connected"
 
     # Step 2: Brief wait for WiFi adapter to initialize after boot
     log(f"Waiting for WiFi adapter... (+{elapsed(start)}s)")
@@ -91,14 +85,14 @@ def run_background():
 
     if not portal_found:
         log(f"Portal not reachable after {MAX_PORTAL_RETRIES} attempts. "
-            f"Exiting. (+{elapsed(start)}s)")
-        return
+            f"(+{elapsed(start)}s)")
+        return False, "Portal not reachable"
 
     # Step 5: Load accounts and login with smart failover
     accounts = load_accounts()
     if not accounts:
         log(f"No accounts found in Credential Manager. (+{elapsed(start)}s)")
-        return
+        return False, "No saved credentials"
 
     # Try account 1 first
     first = accounts[0]
@@ -113,25 +107,24 @@ def run_background():
 
         if status == "LIVE":
             log(f"Login successful using {username1} (+{elapsed(start)}s)")
-            return
+            return True, "Login successful"
 
         # If max login limit reached and we have a second account → try it
         if _is_max_login_error(message) and len(accounts) > 1:
             log(f"Max login limit reached for {username1}. "
                 f"Switching to backup account... (+{elapsed(start)}s)")
         elif len(accounts) > 1:
-            # Any other failure — still try second account as fallback
             log(f"Login failed for {username1}: {message}. "
                 f"Trying backup account... (+{elapsed(start)}s)")
         else:
             log(f"Login failed for {username1}: {message}. "
                 f"No backup account available. (+{elapsed(start)}s)")
-            return
+            return False, message or "Login failed"
 
     except Exception as e:
         log(f"Error with {username1}: {e} (+{elapsed(start)}s)")
         if len(accounts) <= 1:
-            return
+            return False, str(e)
 
     # Try account 2 (backup)
     if len(accounts) > 1:
@@ -147,7 +140,7 @@ def run_background():
 
             if status == "LIVE":
                 log(f"Login successful using {username2} (+{elapsed(start)}s)")
-                return
+                return True, "Login successful"
             else:
                 log(f"Backup login also failed: {message} "
                     f"(+{elapsed(start)}s)")
@@ -155,6 +148,46 @@ def run_background():
             log(f"Error with {username2}: {e} (+{elapsed(start)}s)")
 
     log(f"All accounts failed. (+{elapsed(start)}s)")
+    last_message = message if 'message' in locals() else "All accounts failed"
+    return False, last_message or "All accounts failed"
+
+
+def run_background():
+    """Boot-time entry point — runs auto-login and always shows popup."""
+    config = load_config()
+
+    # First run → open setup wizard (needs user input)
+    if not config["setup_completed"]:
+        log("First run detected. Opening setup window.")
+        setup.run()
+        return
+
+    # Run auto-login in a background thread, then show popup with result
+    result = {"success": None, "reason": ""}
+
+    def _login_thread():
+        success, reason = _background_login_flow()
+        result["success"] = success
+        result["reason"] = reason
+
+    # Run login in background
+    t = threading.Thread(target=_login_thread, daemon=True)
+    t.start()
+    t.join()  # Wait for login to complete before showing popup
+
+    if result["success"]:
+        # Show brief success popup (auto-closes after 3s)
+        popup.show_popup(
+            initial_status=f"✓ {result['reason']}",
+            initial_color="#16a34a",
+            auto_close=True
+        )
+    else:
+        # Show failure popup (stays open for manual Connect/Settings)
+        popup.show_popup(
+            initial_status=f"✗ {result['reason']}",
+            initial_color="#dc2626"
+        )
 
 
 def main():

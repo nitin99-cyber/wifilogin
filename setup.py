@@ -11,7 +11,7 @@ from startup import add_to_startup, remove_from_startup, is_startup_enabled
 from internet import is_connected
 from network import is_cyberoam_network
 from wifi_scanner import connect_to_best_mmmut
-from login import login
+from login import login, logout
 from logger import log
 import metadata
 
@@ -57,7 +57,7 @@ def open_about(parent: tk.Tk):
     about_win = tk.Toplevel(parent)
     about_win.title(f"About - {metadata.APP_NAME}")
     about_win.resizable(False, False)
-    center_window(about_win, 460, 780)
+    center_window(about_win, 460, 920)
     about_win.transient(parent)
     about_win.grab_set()
     set_icon(about_win)
@@ -79,7 +79,8 @@ def open_about(parent: tk.Tk):
     ttk.Label(frame, text="Features",
               font=("Segoe UI", 10, "bold")).pack(anchor="w")
     for feature in ["• Automatic Login", "• Secure Credential Storage",
-                     "• Multiple Account Support", "• Windows Startup",
+                     "• Multiple Account Support", "• Portal Logout",
+                     "• Boot Status Popup", "• Windows Startup",
                      "• Lightweight"]:
         ttk.Label(frame, text=feature).pack(anchor="w", padx=10)
 
@@ -96,6 +97,28 @@ def open_about(parent: tk.Tk):
         "• The application only communicates with the official MMMUT login portal."
     ]:
         ttk.Label(frame, text=point).pack(anchor="w", padx=10)
+
+    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
+
+    # How Logout Works
+    ttk.Label(frame, text="How Logout Works",
+              font=("Segoe UI", 10, "bold")).pack(anchor="w")
+    for line in [
+        "Logout ends your portal session instantly —",
+        "no need to wait for session expiry.",
+        "",
+        "⚠ Logout disconnects ALL devices using",
+        "that username, not just the current one.",
+        "",
+        "Example: If Account 1 is on Phone & Laptop,",
+        "logging out Account 1 disconnects both.",
+        "Account 2 on another device stays connected.",
+        "",
+        "Tip: Use different accounts on different",
+        "devices to log out selectively.",
+    ]:
+        ttk.Label(frame, text=line,
+                  font=("Segoe UI", 9)).pack(anchor="w", padx=10)
 
     ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
 
@@ -348,12 +371,38 @@ def run():
     ttk.Button(
         buttons_frame, text="Save & Connect",
         command=save_and_connect
-    ).pack(side="left", fill="x", expand=True, padx=(0, 5))
+    ).pack(side="left", fill="x", expand=True, padx=(0, 3))
+
+    def do_logout():
+        """Log out all saved accounts from the portal."""
+        accounts = load_accounts()
+        if not accounts:
+            update_status(status_label, "No saved credentials", "#dc2626")
+            return
+
+        def _logout_thread():
+            update_status(status_label, "Logging out...", "#64748b")
+            for acc in accounts:
+                username = acc["username"]
+                try:
+                    status, message = logout(username)
+                    log(f"Logout {username}: {status} - {message}")
+                except Exception as e:
+                    log(f"Logout error for {username}: {e}")
+            update_status(status_label, "✓ Logged out", "#16a34a")
+
+        thread = threading.Thread(target=_logout_thread, daemon=True)
+        thread.start()
+
+    ttk.Button(
+        buttons_frame, text="Logout",
+        command=do_logout
+    ).pack(side="left", fill="x", expand=True, padx=(3, 3))
 
     ttk.Button(
         buttons_frame, text="About",
         command=lambda: open_about(root)
-    ).pack(side="right", fill="x", expand=True, padx=(5, 0))
+    ).pack(side="right", fill="x", expand=True, padx=(3, 0))
 
     # ── Management Buttons (shown only when credentials exist) ──
     mgmt_frame = ttk.Frame(frame)

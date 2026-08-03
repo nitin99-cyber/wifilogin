@@ -26,3 +26,26 @@ def login(username, password):
     message = root.findtext("message")
 
     return status, message
+
+
+def logout(username):
+    """Log out a user from the Cyberoam portal (mode=193)."""
+    payload = {
+        "mode": "193",
+        "username": username,
+        "a": str(int(time.time() * 1000)),
+        "producttype": PRODUCT_TYPE,
+    }
+
+    response = requests.post(
+        LOGIN_URL,
+        data=payload,
+        timeout=2,
+    )
+
+    root = ET.fromstring(response.text)
+
+    status = root.findtext("status")
+    message = root.findtext("message")
+
+    return status, message
