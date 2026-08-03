@@ -217,23 +217,32 @@ def run_connect_flow(status_label: tk.Label, username: str, password: str):
     update_status(status_label, "● Portal detected", "#2563eb")
 
     # Step 4: Login
-    update_status(status_label,
-                  f"● Logging in as {username}...", "#2563eb")
+    accounts = load_accounts()
+    if not accounts:
+        # Fallback if somehow load fails
+        accounts = [{"username": username, "password": password}]
 
-    try:
-        status, message = login(username, password)
-        log(f"Response: {status} - {message}")
+    for i, acc in enumerate(accounts):
+        user = acc["username"]
+        pwd = acc["password"]
+        acc_label = "primary" if i == 0 else "backup"
 
-        if status == "LIVE":
-            update_status(status_label,
-                          "✓ Login successful!", "#16a34a")
-        else:
-            update_status(status_label,
-                          f"✗ Login failed: {message}", "#dc2626")
-    except Exception as e:
-        log(f"Error during login: {e}")
         update_status(status_label,
-                      f"✗ Error: {e}", "#dc2626")
+                      f"● Logging in as {user}...", "#2563eb")
+
+        try:
+            status, message = login(user, pwd)
+            log(f"GUI login ({acc_label}): {status} - {message}")
+
+            if status == "LIVE":
+                update_status(status_label,
+                              "✓ Login successful!", "#16a34a")
+                return
+        except Exception as e:
+            log(f"Error during login ({acc_label}): {e}")
+
+    # If we get here, all accounts failed
+    update_status(status_label, "✗ Login failed for all accounts", "#dc2626")
 
 
 # ── Main Setup Window ─────────────────────────────────────────────────
