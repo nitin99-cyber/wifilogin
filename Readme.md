@@ -215,6 +215,16 @@ The entire flow now completes in almost 4 seconds,depending on the OS and hardwa
 
 ---
 
+### Problem 11: "Not on MMMUT network" Error Despite Strong Signal
+
+**What happened:** The app would sometimes fail to connect when multiple networks (like `MMMUT` and `MMMUT_RAMAN`) were present, showing a "Not on MMMUT network" error in the UI, even though the signal was strong. However, it worked fine if only one network was present.
+
+**Root cause:** Two hidden bugs working together. First, the UI had a very aggressive timeout (only 2 seconds) for checking the portal. When switching networks, a laptop often takes 3-5 seconds to authenticate and acquire an IP address via DHCP. Second, the Wi-Fi scanner treated each individual access point (BSSID) as a separate network. If a weak network had multiple access points, the app would redundantly try to connect to that same weak network multiple times, hiding the actual errors and delaying the connection.
+
+**Solution:** I increased the portal check timeouts in the UI to match the generous timeouts in the background auto-login script (giving it up to 16 seconds to settle). I also updated the Wi-Fi scanner to deduplicate networks by SSID, ensuring it only tries the strongest access point for each network name once, and added safe quotes around the SSID in the `netsh wlan connect` command.
+
+---
+
 ## Features
 
 - **Zero-Touch Auto Login** — Runs silently at Windows startup, connects to the strongest MMMUT Wi-Fi, and logs in automatically.

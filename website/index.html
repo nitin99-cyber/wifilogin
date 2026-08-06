@@ -1,450 +1,613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- ===== Meta ===== -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MMMUT WiFi Auto Login — Automatic Wi-Fi Login for MMMUT Students</title>
-  <meta name="description" content="MMMUT WiFi Auto Login automatically logs you into the MMMUT Cyberoam Wi-Fi portal. Free, open-source, lightweight Windows utility for MMMUT students." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://nitin99-cyber.github.io/wifilogin/" />
-
-  <!-- ===== Open Graph ===== -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="MMMUT WiFi Auto Login" />
-  <meta property="og:description" content="Automatically logs you into the MMMUT Cyberoam Wi-Fi portal. Free &amp; open-source." />
-  <meta property="og:url" content="https://nitin99-cyber.github.io/wifilogin/" />
-  <meta property="og:image" content="https://nitin99-cyber.github.io/wifilogin/assets/images/og-image.png" />
-
-  <!-- ===== Twitter Card ===== -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="MMMUT WiFi Auto Login" />
-  <meta name="twitter:description" content="Automatically logs you into the MMMUT Cyberoam Wi-Fi portal." />
-  <meta name="twitter:image" content="https://nitin99-cyber.github.io/wifilogin/assets/images/og-image.png" />
-
-  <!-- ===== Favicon ===== -->
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
-
-  <!-- ===== Google Fonts: Inter ===== -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- ===== Stylesheet ===== -->
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Automatically log in to the MMMUT Cyberoam Wi-Fi portal. No more typing credentials every time you connect. Built for MMMUT students.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MMMUT WiFi Auto Login">
+  <meta property="og:description" content="Automatically log in to the MMMUT Cyberoam Wi-Fi portal. No more typing credentials every time you connect.">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="MMMUT WiFi Auto Login">
+  <meta property="twitter:description" content="Automatically log in to the MMMUT Cyberoam Wi-Fi portal. No more typing credentials every time you connect.">
+  
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ============================== HEADER ============================== -->
-  <header class="header" role="banner">
-    <nav class="nav container" aria-label="Main navigation">
-      <!-- Logo -->
-      <a href="#" class="nav__logo" aria-label="MMMUT WiFi Auto Login Home">
-        <!-- WiFi icon -->
-        <svg class="nav__logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-          <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-          <circle cx="12" cy="20" r="1"/>
-        </svg>
-        MMMUT WiFi Auto Login
+  <!-- 1. Header -->
+  <header class="header">
+    <nav class="nav container">
+      <a href="#" class="nav__logo">
+        <svg class="nav__logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+        MMMUT WiFi
       </a>
-
-      <!-- Desktop Nav Links -->
-      <ul class="nav__links" role="list">
+      <ul class="nav__links">
+        <li><a href="#downloads" class="nav__link">Downloads</a></li>
         <li><a href="#features" class="nav__link">Features</a></li>
-        <li><a href="#privacy" class="nav__link">Privacy</a></li>
-        <li><a href="#screenshots" class="nav__link">Screenshots</a></li>
-        <li><a href="#install" class="nav__link">Install</a></li>
+        <li><a href="#security" class="nav__link">Security</a></li>
         <li><a href="#faq" class="nav__link">FAQ</a></li>
-        <li><a href="#download" class="nav__link">Download</a></li>
+        <li><a href="https://github.com/nitin99-cyber/wifilogin" class="nav__link" target="_blank" rel="noopener noreferrer">GitHub</a></li>
       </ul>
-
-      <!-- Mobile hamburger -->
-      <button class="nav__toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
+      <button class="nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </nav>
   </header>
 
-  <!-- ============================== HERO ============================== -->
-  <section class="hero" id="hero" aria-label="Hero">
-    <div class="container hero__inner">
-      <!-- Text -->
-      <div class="hero__content">
-        <span class="hero__badge">v1.0.0 — Free &amp; Open Source</span>
-        <h1 class="hero__title">MMMUT WiFi<br/>Auto Login</h1>
-        <p class="hero__subtitle">Automatically logs you into the MMMUT Cyberoam Wi-Fi portal. No more typing credentials every time you connect.</p>
+  <main>
+    <!-- 2. Hero -->
+    <section class="hero" id="hero">
+      <div class="hero__glow"></div>
+      <div class="hero__inner container reveal">
+        <span class="hero__badge">v2.1.0 · Open Source</span>
+        <h1 class="hero__title">MMMUT WiFi<br>Auto Login</h1>
+        <p class="hero__subtitle">Automatically log in to the MMMUT Cyberoam Wi-Fi portal. No more typing credentials every time you connect.</p>
+        <p class="hero__tags"><span>Secure</span> <span>·</span> <span>Open Source</span> <span>·</span> <span>Lightweight</span></p>
         <div class="hero__actions">
-          <!-- Download: points to Google Drive (replace URL) -->
-          <a href="https://drive.google.com/YOUR_LINK_HERE" class="btn btn--primary" data-track="download" aria-label="Download version 1.0.0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download v1.0.0
+          <a class="btn btn--primary" href="https://github.com/nitin99-cyber/wifilogin/releases/latest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Installer
           </a>
-          <!-- View Source -->
-          <a href="https://github.com/nitin99-cyber/wifilogin" class="btn btn--secondary" target="_blank" rel="noopener noreferrer" data-track="github" aria-label="View source code on GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.38 11.38 0 0 1 6 0c2.28-1.55 3.28-1.23 3.28-1.23a4.28 4.28 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.22c0 4.61-2.81 5.63-5.48 5.92a2.87 2.87 0 0 1 .82 2.23v3.29c0 .32.22.7.82.58A12 12 0 0 0 12 .3"/></svg>
-            View Source Code
+          <a class="btn btn--ghost" href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            View on GitHub
           </a>
         </div>
       </div>
+    </section>
 
-      <!-- Hero Illustration — WiFi + Laptop + Shield SVG -->
-      <div class="hero__illustration" aria-hidden="true">
-        <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Laptop body -->
-          <rect x="110" y="120" width="280" height="180" rx="12" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
-          <!-- Screen -->
-          <rect x="125" y="132" width="250" height="148" rx="6" fill="#1e293b"/>
-          <!-- Screen content: WiFi symbol -->
-          <path d="M210 210a50 50 0 0 1 80 0" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <path d="M222 222a32 32 0 0 1 56 0" stroke="#60a5fa" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <path d="M234 234a16 16 0 0 1 32 0" stroke="#93c5fd" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <circle cx="250" cy="244" r="4" fill="#3b82f6"/>
-          <!-- Check mark on screen -->
-          <path d="M238 258l8 8 16-16" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <!-- Laptop base -->
-          <rect x="85" y="300" width="330" height="14" rx="7" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
-          <!-- Shield -->
-          <path d="M400 80l30-16 30 16v36c0 20-14 38-30 46-16-8-30-26-30-46V80z" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
-          <path d="M420 108l8 8 14-14" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <!-- Decorative dots -->
-          <circle cx="80" cy="170" r="6" fill="#dbeafe"/>
-          <circle cx="60" cy="250" r="4" fill="#bfdbfe"/>
-          <circle cx="450" cy="200" r="5" fill="#dbeafe"/>
-          <circle cx="470" cy="280" r="3" fill="#bfdbfe"/>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== FEATURES ============================== -->
-  <section class="section" id="features" aria-label="Features">
-    <div class="container">
-      <h2 class="section__title">Features</h2>
-      <p class="section__subtitle">Everything you need to stay connected at MMMUT — automatically.</p>
-
-      <div class="features__grid">
-        <!-- Card 1 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+    <!-- 3. Downloads -->
+    <section class="section" id="downloads">
+      <div class="container reveal">
+        <h2 class="section__title">Downloads</h2>
+        <p class="section__subtitle">Get the latest version. Choose what works for you.</p>
+        <div class="downloads__grid">
+          <div class="download-card download-card--recommended">
+            <span class="download-card__badge">Recommended</span>
+            <h3 class="download-card__title">Download Installer</h3>
+            <p class="download-card__meta">Version 2.1.0 · 18.2 MB</p>
+            <a class="btn btn--primary" href="https://github.com/nitin99-cyber/wifilogin/releases/latest" style="width: 100%; justify-content: center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download .exe
+            </a>
           </div>
-          <h3 class="feature-card__title">Automatic Login</h3>
-          <p class="feature-card__desc">Automatically logs you into the Cyberoam portal when your device connects to the MMMUT network.</p>
-        </div>
-        <!-- Card 2 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div class="download-card">
+            <h3 class="download-card__title">Advanced Users</h3>
+            <p class="download-card__meta">For developers and power users</p>
+            <div class="download-card__links">
+              <a href="https://github.com/nitin99-cyber/wifilogin/releases/latest" class="download-card__link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                View GitHub Release
+              </a>
+              <a href="https://github.com/nitin99-cyber/wifilogin/releases" class="download-card__link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Release Notes
+              </a>
+              <a href="https://github.com/nitin99-cyber/wifilogin" class="download-card__link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Source Code
+              </a>
+              <a href="https://github.com/nitin99-cyber/wifilogin/releases" class="download-card__link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Checksums
+              </a>
+            </div>
           </div>
-          <h3 class="feature-card__title">Secure Credential Storage</h3>
-          <p class="feature-card__desc">Credentials are securely stored using Windows Credential Manager — never saved in plain text.</p>
-        </div>
-        <!-- Card 3 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3 class="feature-card__title">Multiple Account Support</h3>
-          <p class="feature-card__desc">Save and manage multiple accounts. The app tries each one until login succeeds.</p>
-        </div>
-        <!-- Card 4 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <h3 class="feature-card__title">Automatic Startup</h3>
-          <p class="feature-card__desc">Launches automatically when Windows starts so you never have to think about logging in.</p>
-        </div>
-        <!-- Card 5 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-          <h3 class="feature-card__title">Lightweight</h3>
-          <p class="feature-card__desc">Runs quickly and uses very little system resources. No background processes hogging your RAM.</p>
-        </div>
-        <!-- Card 6 -->
-        <div class="feature-card">
-          <div class="feature-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </div>
-          <h3 class="feature-card__title">Open Source</h3>
-          <p class="feature-card__desc">Source code is available for inspection on GitHub. Transparent and community-driven.</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================== PRIVACY ============================== -->
-  <section class="section section--alt" id="privacy" aria-label="Privacy and Security">
-    <div class="container">
-      <h2 class="section__title">Privacy &amp; Security</h2>
-      <p class="section__subtitle">Your data stays on your computer. Always.</p>
-
-      <div class="privacy__box">
-        <p class="privacy__intro">This application is designed with privacy in mind.</p>
-        <ul class="privacy__list" role="list">
-          <li class="privacy__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            Your credentials never leave your computer.
-          </li>
-          <li class="privacy__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            Passwords are stored securely using Windows Credential Manager.
-          </li>
-          <li class="privacy__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            No analytics are collected by the application itself.
-          </li>
-          <li class="privacy__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            No personal information is transmitted to the developer.
-          </li>
-          <li class="privacy__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            The application communicates only with the official MMMUT Cyberoam login portal.
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== SCREENSHOTS ============================== -->
-  <section class="section" id="screenshots" aria-label="Screenshots">
-    <div class="container">
-      <h2 class="section__title">Screenshots</h2>
-      <p class="section__subtitle">A quick look at what you get.</p>
-
-      <div class="screenshots__grid">
-        <!-- Placeholder 1: Setup Window -->
-        <div>
-          <div class="screenshot-placeholder" role="img" aria-label="Setup Window screenshot placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Setup Window
+    <!-- 4. Features -->
+    <section class="section" id="features">
+      <div class="container reveal">
+        <h2 class="section__title">Features</h2>
+        <p class="section__subtitle">Everything you need to stay connected — automatically.</p>
+        <div class="features__grid">
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+            </div>
+            <h3 class="feature-card__title">Automatic Login</h3>
+            <p class="feature-card__desc">Automatically logs you into the Cyberoam portal when your device connects to the MMMUT network.</p>
           </div>
-          <p class="screenshot__caption">Setup Window</p>
-        </div>
-        <!-- Placeholder 2: About Dialog -->
-        <div>
-          <div class="screenshot-placeholder" role="img" aria-label="About Dialog screenshot placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            About Dialog
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 class="feature-card__title">Windows Credential Manager</h3>
+            <p class="feature-card__desc">Credentials are securely stored using Windows Credential Manager — never saved in plain text.</p>
           </div>
-          <p class="screenshot__caption">About Dialog</p>
-        </div>
-        <!-- Placeholder 3: Installer -->
-        <div>
-          <div class="screenshot-placeholder" role="img" aria-label="Installer screenshot placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Installer
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="feature-card__title">Multiple Accounts</h3>
+            <p class="feature-card__desc">Save and manage multiple accounts. The app tries each one until login succeeds.</p>
           </div>
-          <p class="screenshot__caption">Installer</p>
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3 class="feature-card__title">Automatic Startup</h3>
+            <p class="feature-card__desc">Launches automatically when Windows starts so you never have to think about logging in.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3 class="feature-card__title">Lightweight</h3>
+            <p class="feature-card__desc">Runs quickly and uses very little system resources. No background processes hogging your RAM.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3 class="feature-card__title">Open Source</h3>
+            <p class="feature-card__desc">Source code is available on GitHub. Transparent, community-driven, and free forever.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================== INSTALLATION ============================== -->
-  <section class="section section--alt" id="install" aria-label="Installation steps">
-    <div class="container">
-      <h2 class="section__title">Installation</h2>
-      <p class="section__subtitle">Up and running in four simple steps.</p>
-
-      <div class="steps__grid">
-        <div class="step">
-          <div class="step__number">1</div>
-          <h3 class="step__title">Download</h3>
-          <p class="step__desc">Download the installer from the link above.</p>
-        </div>
-        <div class="step">
-          <div class="step__number">2</div>
-          <h3 class="step__title">Run Installer</h3>
-          <p class="step__desc">Run the setup wizard and follow the prompts.</p>
-        </div>
-        <div class="step">
-          <div class="step__number">3</div>
-          <h3 class="step__title">Save Credentials</h3>
-          <p class="step__desc">Enter your MMMUT Wi-Fi username and password.</p>
-        </div>
-        <div class="step">
-          <div class="step__number">4</div>
-          <h3 class="step__title">Enjoy</h3>
-          <p class="step__desc">Automatic login every time you connect to Wi-Fi.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== FAQ ============================== -->
-  <section class="section" id="faq" aria-label="Frequently Asked Questions">
-    <div class="container">
-      <h2 class="section__title">Frequently Asked Questions</h2>
-      <p class="section__subtitle">Common questions about the application.</p>
-
-      <div class="faq__list">
-        <!-- Q1 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Is it free?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    <!-- 5. Screenshots -->
+    <section class="section" id="screenshots">
+      <div class="container reveal">
+        <h2 class="section__title">Screenshots</h2>
+        <p class="section__subtitle">A quick look at what you get.</p>
+        <div class="carousel">
+          <button class="carousel__prev" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">Yes, completely free. No subscriptions, no hidden charges.</div>
+          <div class="carousel__track">
+            <!-- 1. Setup Window -->
+            <div class="carousel__slide">
+              <div class="carousel__slide-inner">
+                <svg viewBox="0 0 300 200" width="100%" height="100%">
+                  <rect x="0" y="0" width="300" height="200" rx="8" fill="#151a22" stroke="#21262d" stroke-width="2"/>
+                  <!-- Window controls -->
+                  <circle cx="20" cy="20" r="4" fill="#ff5f56"/>
+                  <circle cx="35" cy="20" r="4" fill="#ffbd2e"/>
+                  <circle cx="50" cy="20" r="4" fill="#27c93f"/>
+                  <line x1="0" y1="40" x2="300" y2="40" stroke="#21262d" stroke-width="2"/>
+                  <!-- Content -->
+                  <text x="150" y="25" fill="#a4aea6" font-family="sans-serif" font-size="12" text-anchor="middle">MMMUT WiFi Auto Login</text>
+                  <!-- WiFi Icon -->
+                  <svg x="135" y="55" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5fed83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/>
+                  </svg>
+                  <text x="150" y="105" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Add Credential</text>
+                  <rect x="50" y="120" width="200" height="20" rx="4" fill="#21262d"/>
+                  <text x="60" y="134" fill="#a4aea6" font-family="sans-serif" font-size="10">Username</text>
+                  <rect x="50" y="150" width="200" height="20" rx="4" fill="#21262d"/>
+                  <text x="60" y="164" fill="#a4aea6" font-family="sans-serif" font-size="10">••••••••••</text>
+                  <rect x="50" y="180" width="200" height="24" rx="4" fill="#5fed83"/>
+                  <text x="150" y="196" fill="#151a22" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Save</text>
+                </svg>
+              </div>
+            </div>
+            <!-- 2. About Window -->
+            <div class="carousel__slide">
+              <div class="carousel__slide-inner">
+                <svg viewBox="0 0 300 200" width="100%" height="100%">
+                  <rect x="0" y="0" width="300" height="200" rx="8" fill="#151a22" stroke="#21262d" stroke-width="2"/>
+                  <!-- Window controls -->
+                  <circle cx="20" cy="20" r="4" fill="#ff5f56"/>
+                  <circle cx="35" cy="20" r="4" fill="#ffbd2e"/>
+                  <circle cx="50" cy="20" r="4" fill="#27c93f"/>
+                  <line x1="0" y1="40" x2="300" y2="40" stroke="#21262d" stroke-width="2"/>
+                  <!-- Content -->
+                  <text x="150" y="25" fill="#a4aea6" font-family="sans-serif" font-size="12" text-anchor="middle">About</text>
+                  <circle cx="150" cy="80" r="25" fill="#21262d"/>
+                  <!-- Info Icon -->
+                  <svg x="138" y="68" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5fed83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <text x="150" y="130" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">MMMUT WiFi Auto Login</text>
+                  <text x="150" y="145" fill="#a4aea6" font-family="sans-serif" font-size="10" text-anchor="middle">Version 2.1.0</text>
+                  <text x="150" y="165" fill="#a4aea6" font-family="sans-serif" font-size="10" text-anchor="middle">Developed by Nitin Deep</text>
+                  <rect x="110" y="180" width="80" height="20" rx="4" fill="#21262d"/>
+                  <text x="150" y="194" fill="#ffffff" font-family="sans-serif" font-size="10" text-anchor="middle">OK</text>
+                </svg>
+              </div>
+            </div>
+            <!-- 3. Installer -->
+            <div class="carousel__slide">
+              <div class="carousel__slide-inner">
+                <svg viewBox="0 0 300 200" width="100%" height="100%">
+                  <rect x="0" y="0" width="300" height="200" rx="8" fill="#151a22" stroke="#21262d" stroke-width="2"/>
+                  <!-- Window controls -->
+                  <circle cx="20" cy="20" r="4" fill="#ff5f56"/>
+                  <circle cx="35" cy="20" r="4" fill="#ffbd2e"/>
+                  <circle cx="50" cy="20" r="4" fill="#27c93f"/>
+                  <line x1="0" y1="40" x2="300" y2="40" stroke="#21262d" stroke-width="2"/>
+                  <!-- Content -->
+                  <text x="150" y="25" fill="#a4aea6" font-family="sans-serif" font-size="12" text-anchor="middle">Setup</text>
+                  <rect x="20" y="60" width="260" height="90" rx="4" fill="#21262d"/>
+                  <text x="150" y="90" fill="#ffffff" font-family="sans-serif" font-size="12" text-anchor="middle">Installing MMMUT WiFi Auto Login...</text>
+                  <rect x="40" y="110" width="220" height="8" rx="4" fill="#151a22"/>
+                  <rect x="40" y="110" width="140" height="8" rx="4" fill="#5fed83"/>
+                  <text x="150" y="135" fill="#a4aea6" font-family="sans-serif" font-size="10" text-anchor="middle">Extracting files: core.exe</text>
+                  <rect x="210" y="165" width="70" height="25" rx="4" fill="#5fed83" opacity="0.5"/>
+                  <text x="245" y="182" fill="#151a22" font-family="sans-serif" font-size="12" text-anchor="middle">Next &gt;</text>
+                  <rect x="130" y="165" width="70" height="25" rx="4" fill="#21262d"/>
+                  <text x="165" y="182" fill="#ffffff" font-family="sans-serif" font-size="12" text-anchor="middle">Cancel</text>
+                </svg>
+              </div>
+            </div>
+            <!-- 4. Running App -->
+            <div class="carousel__slide">
+              <div class="carousel__slide-inner">
+                <svg viewBox="0 0 300 200" width="100%" height="100%">
+                  <!-- Representing the desktop/system tray area -->
+                  <rect x="0" y="0" width="300" height="200" fill="#0d1117"/>
+                  <!-- Notification popup -->
+                  <rect x="100" y="100" width="180" height="60" rx="6" fill="#151a22" stroke="#21262d" stroke-width="2"/>
+                  <!-- App Icon in notification -->
+                  <svg x="110" y="115" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5fed83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/>
+                  </svg>
+                  <text x="140" y="125" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="bold">Connected</text>
+                  <text x="140" y="145" fill="#a4aea6" font-family="sans-serif" font-size="10">Successfully logged into MMMUT</text>
+                  <!-- System tray bar at bottom -->
+                  <rect x="0" y="180" width="300" height="20" fill="#151a22" stroke="#21262d" stroke-width="1"/>
+                  <!-- Tray icons -->
+                  <circle cx="280" cy="190" r="4" fill="#a4aea6"/>
+                  <circle cx="265" cy="190" r="4" fill="#5fed83"/>
+                  <circle cx="250" cy="190" r="4" fill="#a4aea6"/>
+                </svg>
+              </div>
+            </div>
           </div>
-        </div>
-        <!-- Q2 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Is it open source?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <button class="carousel__next" aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">Yes! The full source code is available on <a href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer">GitHub</a> under the MIT License.</div>
+          <div class="carousel__dots">
+            <button class="carousel__dot carousel__dot--active" aria-label="Go to slide 1"></button>
+            <button class="carousel__dot" aria-label="Go to slide 2"></button>
+            <button class="carousel__dot" aria-label="Go to slide 3"></button>
+            <button class="carousel__dot" aria-label="Go to slide 4"></button>
           </div>
-        </div>
-        <!-- Q3 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Do I need Python?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">No. The application is packaged as a standalone executable using PyInstaller. No Python installation is required.</div>
-          </div>
-        </div>
-        <!-- Q4 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Does it store my password?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">Yes, but securely. Your credentials are stored in Windows Credential Manager — the same vault Windows uses for its own passwords. They never leave your computer.</div>
-          </div>
-        </div>
-        <!-- Q5 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Can I uninstall it anytime?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">Absolutely. Go to Windows Settings &rarr; Apps &rarr; Installed Apps and uninstall like any other program. Your saved credentials will remain untouched in case you reinstall later.</div>
-          </div>
-        </div>
-        <!-- Q6 -->
-        <div class="faq__item">
-          <button class="faq__question" aria-expanded="false">
-            Which Windows versions are supported?
-            <svg class="faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="faq__answer" role="region">
-            <div class="faq__answer-inner">Windows 10 and Windows 11 are fully supported.</div>
-          </div>
+          <p class="carousel__caption" id="carousel-caption">Setup Window</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================== DEVELOPER ============================== -->
-  <section class="section section--alt" id="developer" aria-label="Developer information">
-    <div class="container">
-      <h2 class="section__title">Developer</h2>
-      <p class="section__subtitle">Built by a student, for students.</p>
-
-      <div class="developer__card">
-        <div class="developer__avatar" aria-hidden="true">ND</div>
-        <h3 class="developer__name">Nitin Deep</h3>
-        <p class="developer__degree">B.Tech CSE '29</p>
-        <p class="developer__college">MMMUT Gorakhpur</p>
-        <div class="developer__links">
-          <a href="https://github.com/nitin99-cyber/wifilogin" class="developer__link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.38 11.38 0 0 1 6 0c2.28-1.55 3.28-1.23 3.28-1.23a4.28 4.28 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.22c0 4.61-2.81 5.63-5.48 5.92a2.87 2.87 0 0 1 .82 2.23v3.29c0 .32.22.7.82.58A12 12 0 0 0 12 .3"/></svg>
-            GitHub
-          </a>
-          <a href="mailto:nitincsemmmut@gmail.com" class="developer__link" aria-label="Send email">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Email
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== DOWNLOADS ============================== -->
-  <section class="section" id="download" aria-label="Download">
-    <div class="container">
-      <h2 class="section__title">Download</h2>
-      <p class="section__subtitle">Get the latest version of MMMUT WiFi Auto Login.</p>
-
-      <div class="downloads__card">
-        <p class="downloads__version">v1.0.0</p>
-        <p class="downloads__date">Released — July 2026</p>
-
-        <div class="downloads__btn">
-          <a href="https://drive.google.com/YOUR_LINK_HERE" class="btn btn--primary" data-track="download" aria-label="Download from Google Drive">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download v1.0.0
-          </a>
-        </div>
-
-        <div class="changelog">
-          <h3 class="changelog__title">Changelog — v1.0.0</h3>
-          <ul class="changelog__list" role="list">
-            <li class="changelog__item">Initial Release</li>
-            <li class="changelog__item">Automatic Login</li>
-            <li class="changelog__item">Multiple Accounts</li>
-            <li class="changelog__item">Windows Credential Manager</li>
-            <li class="changelog__item">Windows Startup</li>
-            <li class="changelog__item">Logging</li>
-            <li class="changelog__item">Installer Support</li>
+    <!-- 6. Security -->
+    <section class="section" id="security">
+      <div class="container reveal">
+        <h2 class="section__title">Security</h2>
+        <p class="section__subtitle">Your data stays on your computer. Always.</p>
+        <div class="security__box">
+          <ul class="security__list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Your credentials never leave your computer.
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Passwords are stored using Windows Credential Manager.
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              No analytics collected.
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              No telemetry or tracking.
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              No advertisements.
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Fully open source — inspect the code yourself.
+            </li>
           </ul>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================== FOOTER ============================== -->
-  <footer class="footer" role="contentinfo">
+    <!-- 7. Installation -->
+    <section class="section" id="installation">
+      <div class="container reveal">
+        <h2 class="section__title">Installation</h2>
+        <p class="section__subtitle">Up and running in four simple steps.</p>
+        <div class="steps__grid">
+          <div class="step-card">
+            <span class="step-card__number">1</span>
+            <h3 class="step-card__title">Download</h3>
+            <p class="step-card__desc">Get the installer from the download section above.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-card__number">2</span>
+            <h3 class="step-card__title">Run Installer</h3>
+            <p class="step-card__desc">Run the setup wizard and follow the prompts.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-card__number">3</span>
+            <h3 class="step-card__title">Enter Credentials</h3>
+            <p class="step-card__desc">Save your MMMUT Wi-Fi username and password.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-card__number">4</span>
+            <h3 class="step-card__title">Done</h3>
+            <p class="step-card__desc">Automatic login every time you connect to Wi-Fi.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Version -->
+    <section class="section" id="version">
+      <div class="container reveal">
+        <h2 class="section__title">Version Info</h2>
+        <p class="section__subtitle">Current release details.</p>
+        <div class="version__card">
+          <div class="version__grid">
+            <div>
+              <span class="version__item-label">Current Version</span>
+              <span class="version__item-value">2.1.0</span>
+            </div>
+            <div>
+              <span class="version__item-label">Release Date</span>
+              <span class="version__item-value">4 Aug 2026</span>
+            </div>
+            <div>
+              <span class="version__item-label">Compatibility</span>
+              <div class="version__compat">
+                <span class="version__badge">Windows 10+</span>
+                <span class="version__badge">Windows 11</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Changelog -->
+    <section class="section" id="changelog">
+      <div class="container reveal">
+        <h2 class="section__title">Changelog</h2>
+        <p class="section__subtitle">What's new in the latest release.</p>
+        <div class="changelog__card">
+          <p class="changelog__version">v2.1.0</p>
+          <p class="changelog__subtitle">Initial Release</p>
+          <ul class="changelog__list">
+            <li class="changelog__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Automatic Login
+            </li>
+            <li class="changelog__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Multiple Accounts
+            </li>
+            <li class="changelog__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Credential Manager Integration
+            </li>
+            <li class="changelog__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Windows Startup Support
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Report Bug / Suggest Feature -->
+    <section class="section" id="actions">
+      <div class="container reveal">
+        <h2 class="section__title">Contribute</h2>
+        <p class="section__subtitle">Help us improve the application.</p>
+        <div class="actions__grid">
+          <div class="action-card">
+            <div class="action-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-2"/><path d="M12 14v-2"/><path d="M10 20H8a2 2 0 0 1-2-2v-4"/><path d="M16 20h2a2 2 0 0 0 2-2v-4"/><path d="M12 10V6"/><path d="M9 10v4"/><path d="M15 10v4"/><path d="M8 6h8a2 2 0 0 1 2 2v2H6V8a2 2 0 0 1 2-2z"/><path d="M9 2H15"/></svg>
+            </div>
+            <h3 class="action-card__title">Report a Bug</h3>
+            <p class="action-card__desc">Found something wrong? Let us know on GitHub Issues.</p>
+            <a href="https://github.com/nitin99-cyber/wifilogin/issues/new" class="btn btn--outline" target="_blank" rel="noopener noreferrer">Report Bug</a>
+          </div>
+          <div class="action-card">
+            <div class="action-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1.5 1.5 2 3.5 2 3.5h4s.5-2 2-3.5c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
+            </div>
+            <h3 class="action-card__title">Suggest a Feature</h3>
+            <p class="action-card__desc">Have an idea? Share it on GitHub Discussions.</p>
+            <a href="https://github.com/nitin99-cyber/wifilogin/discussions" class="btn btn--outline" target="_blank" rel="noopener noreferrer">Suggest Feature</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. FAQ -->
+    <section class="section" id="faq">
+      <div class="container reveal">
+        <h2 class="section__title">Frequently Asked Questions</h2>
+        <p class="section__subtitle">Common questions about the application.</p>
+        <div class="faq__list">
+          <details class="faq__item">
+            <summary class="faq__question">Is it safe?</summary>
+            <p class="faq__answer">Yes. The application only communicates with the official MMMUT Cyberoam login portal. Your credentials are stored securely in Windows Credential Manager and never leave your computer. The full source code is available on GitHub for inspection.</p>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">How are passwords stored?</summary>
+            <p class="faq__answer">Passwords are stored using Windows Credential Manager — the same secure vault Windows uses for its own passwords. They are never saved in plain text files.</p>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Does it require Python?</summary>
+            <p class="faq__answer">No. The application is packaged as a standalone executable using PyInstaller. No Python installation required.</p>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Does it work offline?</summary>
+            <p class="faq__answer">The app needs a network connection to reach the MMMUT Cyberoam portal. It monitors your Wi-Fi connection and automatically logs in when you're connected to the campus network.</p>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Can I uninstall anytime?</summary>
+            <p class="faq__answer">Absolutely. Go to Windows Settings &rarr; Apps &rarr; Installed Apps and uninstall like any other program. Your saved credentials in Credential Manager will remain untouched.</p>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Will it support Linux?</summary>
+            <p class="faq__answer">Currently Windows-only. Linux and macOS support may be added in future versions based on community interest.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Download Counter -->
+    <section class="section" id="stats">
+      <div class="container reveal">
+        <h2 class="section__title">Project Stats</h2>
+        <p class="section__subtitle">Growing with the MMMUT community.</p>
+        <div class="stats__grid">
+          <div class="stat-card">
+            <p class="stat__value" id="download-count">248</p>
+            <p class="stat__label">Downloads</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat__value" id="latest-version">2.1.0</p>
+            <p class="stat__label">Latest Version</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Support -->
+    <section class="section" id="support">
+      <div class="container reveal">
+        <div class="support__card">
+          <h2 class="section__title">Found it useful?</h2>
+          <p>❤️ Support the project by starring it on GitHub.</p>
+          <a href="https://github.com/nitin99-cyber/wifilogin" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ⭐ Star on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. Developer -->
+    <section class="section" id="developer">
+      <div class="container reveal">
+        <h2 class="section__title">About the Developer</h2>
+        <p class="section__subtitle">Built by a student, for students.</p>
+        <div class="developer__card">
+          <div class="developer__avatar">ND</div>
+          <h3 class="developer__name">Nitin Deep</h3>
+          <p class="developer__role">B.Tech CSE '29</p>
+          <p class="developer__college">MMMUT Gorakhpur</p>
+          <div class="developer__links">
+            <a href="https://github.com/nitin99-cyber" class="developer__link" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
+            <a href="#" class="developer__link" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn
+            </a>
+            <a href="mailto:nitincsemmmut@gmail.com" class="developer__link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Email
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Stay Updated -->
+    <section class="section" id="updates">
+      <div class="container reveal">
+        <h2 class="section__title">Stay Updated</h2>
+        <p class="section__subtitle">Never miss a release.</p>
+        <div class="updates__grid">
+          <div class="update-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" class="update-card__icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <h3 class="update-card__title">Watch Repository</h3>
+            <p class="update-card__desc">Get notified of new releases on GitHub.</p>
+            <a href="https://github.com/nitin99-cyber/wifilogin/subscription" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Watch</a>
+          </div>
+          <div class="update-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" class="update-card__icon"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <h3 class="update-card__title">WhatsApp Channel</h3>
+            <p class="update-card__desc">Join for quick updates and announcements.</p>
+            <a href="#" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Join</a>
+          </div>
+          <div class="update-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" class="update-card__icon"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            <h3 class="update-card__title">Follow on LinkedIn</h3>
+            <p class="update-card__desc">Connect for project updates.</p>
+            <a href="#" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Follow</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. Disclaimer -->
+    <section class="section" id="disclaimer">
+      <div class="container reveal">
+        <div class="disclaimer__text">
+          ⚠️ This is an independent project. Not affiliated with MMMUT. Use at your own discretion.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 17. Footer -->
+  <footer class="footer">
     <div class="container">
       <div class="footer__grid">
-        <!-- Brand -->
         <div>
           <p class="footer__brand-name">MMMUT WiFi Auto Login</p>
           <p class="footer__brand-desc">Automatic login utility for the MMMUT Cyberoam Wi-Fi portal. Built for students, by a student.</p>
         </div>
-        <!-- Quick Links -->
         <div>
           <p class="footer__heading">Links</p>
-          <ul class="footer__list" role="list">
+          <ul class="footer__list">
             <li><a href="#features" class="footer__link">Features</a></li>
-            <li><a href="#privacy" class="footer__link">Privacy</a></li>
-            <li><a href="#download" class="footer__link">Download</a></li>
+            <li><a href="#security" class="footer__link">Security</a></li>
+            <li><a href="#downloads" class="footer__link">Downloads</a></li>
             <li><a href="#faq" class="footer__link">FAQ</a></li>
           </ul>
         </div>
-        <!-- Contact -->
+        <div>
+          <p class="footer__heading">Project</p>
+          <ul class="footer__list">
+            <li><a href="https://github.com/nitin99-cyber/wifilogin" class="footer__link" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://github.com/nitin99-cyber/wifilogin/releases" class="footer__link" target="_blank" rel="noopener noreferrer">Release Notes</a></li>
+            <li><a href="https://github.com/nitin99-cyber/wifilogin" class="footer__link" target="_blank" rel="noopener noreferrer">Source Code</a></li>
+            <li><a href="https://github.com/nitin99-cyber/wifilogin/blob/main/LICENSE" class="footer__link" target="_blank" rel="noopener noreferrer">License (MIT)</a></li>
+          </ul>
+        </div>
         <div>
           <p class="footer__heading">Contact</p>
-          <ul class="footer__list" role="list">
-            <li><a href="https://github.com/nitin99-cyber/wifilogin" class="footer__link" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-            <li><a href="mailto:nitincsemmmut@gmail.com" class="footer__link">nitincsemmmut@gmail.com</a></li>
+          <ul class="footer__list">
+            <li><a href="mailto:nitincsemmmut@gmail.com" class="footer__link">Email</a></li>
+            <li><a href="#" class="footer__link" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="https://github.com/nitin99-cyber/wifilogin/issues/new" class="footer__link" target="_blank" rel="noopener noreferrer">Report Bug</a></li>
           </ul>
         </div>
       </div>
       <div class="footer__bottom">
-        <p>MMMUT WiFi Auto Login &middot; v1.0.0 &middot; Developed by Nitin Deep &middot; &copy; 2026 Nitin Deep</p>
+        <p>MMMUT WiFi Auto Login · v2.1.0 · Developed by Nitin Deep · &copy; 2026</p>
       </div>
     </div>
   </footer>
 
-  <!-- ===== Script ===== -->
   <script src="script.js"></script>
 </body>
 </html>

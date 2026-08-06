@@ -16,9 +16,9 @@ from logger import log
 import metadata
 
 # Retry settings (same as app.py for consistency)
-MAX_PORTAL_RETRIES = 5
-RETRY_INTERVAL = 0.3
-WIFI_SETTLE_DELAY = 0.5
+MAX_PORTAL_RETRIES = 15
+RETRY_INTERVAL = 1
+WIFI_SETTLE_DELAY = 1
 
 
 # ── Helper functions ──────────────────────────────────────────────────

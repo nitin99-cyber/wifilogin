@@ -87,7 +87,16 @@ def scan_mmmut_networks() -> list[dict]:
 
     # Sort by signal strength descending
     networks.sort(key=lambda n: n["signal"], reverse=True)
-    return networks
+    
+    # Deduplicate by SSID, keeping the one with the highest signal
+    seen_ssids = set()
+    deduped_networks = []
+    for net in networks:
+        if net["ssid"] not in seen_ssids:
+            deduped_networks.append(net)
+            seen_ssids.add(net["ssid"])
+            
+    return deduped_networks
 
 
 def connect_to_best_mmmut() -> str | None:
@@ -120,7 +129,7 @@ def connect_to_best_mmmut() -> str | None:
         ssid = net["ssid"]
         log(f"Connecting to {ssid} (signal {net['signal']}%)...")
 
-        output = _run_netsh("wlan", "connect", f"name={ssid}")
+        output = _run_netsh("wlan", "connect", f'name="{ssid}"')
 
         if "successfully" in output.lower():
             log(f"Connected to {ssid}")

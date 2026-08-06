@@ -21,9 +21,9 @@ from logger import log
 import metadata
 
 # Retry settings for popup connect flow
-MAX_PORTAL_RETRIES = 5
-RETRY_INTERVAL = 0.3
-WIFI_SETTLE_DELAY = 0.5
+MAX_PORTAL_RETRIES = 15
+RETRY_INTERVAL = 1
+WIFI_SETTLE_DELAY = 1
 
 # Auto-close delay after successful login (seconds)
 AUTO_CLOSE_DELAY = 3
