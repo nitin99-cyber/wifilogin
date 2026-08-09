@@ -10,6 +10,8 @@ Compression=lzma
 SolidCompression=yes
 SetupIconFile=..\assets\icon.ico
 DisableProgramGroupPage=yes
+CloseApplications=force
+RestartApplications=False
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -23,3 +25,14 @@ Name: "{autodesktop}\MMMUT WiFi Auto Login"; Filename: "{app}\MMMUT WiFi Auto Lo
 
 [Run]
 Filename: "{app}\MMMUT WiFi Auto Login.exe"; Description: "{cm:LaunchProgram,MMMUT WiFi Auto Login}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+begin
+  if CurStep = ssInstall then
+  begin
+    Exec('taskkill.exe', '/F /IM "MMMUT WiFi Auto Login.exe"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
