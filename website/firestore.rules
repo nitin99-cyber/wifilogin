@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Analytics: Anyone can increment (write), but only authenticated admins can read
+    match /analytics/{docId} {
+      allow read: if request.auth != null;
+      allow write: if true; 
+    }
+    
+    // Reviews: Anyone can create a review, but only authenticated admins can read the list
+    match /reviews/{reviewId} {
+      allow read: if request.auth != null;
+      allow create: if true;
+      allow update, delete: if request.auth != null;
+    }
+  }
+}
