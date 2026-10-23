@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMMUT WiFi Auto Login — Desktop Wi-Fi Automation for Windows</title>
+  <meta name="description" content="Open-source Windows desktop utility that automates Cyberoam captive portal logins for MMMUT students. Silently authenticates, auto-reconnects, and stores credentials securely on your device.">
+
+  <!-- Security & Header Policies -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://www.google-analytics.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src https://fonts.gstatic.com;
+    img-src 'self' data: https:;
+    connect-src 'self' https://firestore.googleapis.com https://www.google-analytics.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+    frame-ancestors 'none';
+  ">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+
+  <!-- Google Fonts: Inter (UI/Body), Outfit (Display), JetBrains Mono (Technical) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCWC2VTY8K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QCWC2VTY8K');
+  </script>
+
+  <!-- Pure-Black Minimalist Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ======================================================================
+       HEADER & NAVIGATION (Matte Black, Understated)
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link" aria-label="MMMUT WiFi Auto Login Home">
+        <img src="assets/images/mmmut-logo.jpg" alt="MMMUT Logo" class="brand-logo" width="32" height="32">
+        <span>MMMUT WiFi Login</span>
+        <span class="brand-badge">v3.1</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link active" aria-current="page">Home</a></li>
+          <li><a href="team.html" class="nav-link">Team</a></li>
+          <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://drive.google.com/file/d/1-xY0tCtlCjL6G8ZW8sxLbkq2X3PECyka/view?usp=drive_link" class="btn btn-primary btn-sm track-download" id="nav-download-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download</span>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div class="mobile-nav-menu" id="mobile-nav-menu">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="team.html" class="nav-link">Team</a>
+      <a href="feedback.html" class="nav-link">Feedback</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================================================================
+         HERO SECTION (Editorial Layout)
+         ==================================================================== -->
+    <section class="section hero-section">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <!-- LEFT: Headline & Actions -->
+          <div class="hero-content-left">
+            <div class="hero-hook">
+              <span class="hero-hook-eyebrow">MMMUT WIFI · MADE FOR STUDENTS</span>
+              <h2 class="hero-hook-question">Tired of entering your roll number and password every time?</h2>
+              <p class="hero-hook-supporting">Meet AutoWiFi for MMMUT. Sign in with less effort and spend more time connected.</p>
+            </div>
+
+            <h1 class="headline-hero">
+              AUTOMATIC WIFI LOGIN.<br>EVERY TIME.
+            </h1>
+
+            <p class="hero-subtitle">
+              Eliminate repetitive captive portal logins. MMMUT WiFi Auto Login helps authenticate in the background and reconnect when your campus Wi-Fi session drops.
+            </p>
+
+            <!-- Actions -->
+            <div class="hero-actions">
+              <a href="https://drive.google.com/file/d/1-xY0tCtlCjL6G8ZW8sxLbkq2X3PECyka/view?usp=drive_link" class="btn btn-primary btn-lg track-download" id="download-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download for Windows</span>
+              </a>
+
+              <a href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                <span>View on GitHub</span>
+              </a>
+            </div>
+
+            <!-- Meta Information -->
+            <div class="hero-meta">
+              <span class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                v3.1.0 · Windows 10 &amp; 11 (64-bit)
+              </span>
+              <span>·</span>
+              <span class="meta-item">Standalone Inno Setup</span>
+              <span>·</span>
+              <span class="meta-item">MIT Open Source</span>
+            </div>
+
+            <!-- SmartScreen Notice -->
+            <div class="smartscreen-notice" role="note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <div>
+                <strong>SmartScreen Notice:</strong> Windows may show an unrecognized publisher prompt as this tool is released independently without costly enterprise certs. Verify the source code on GitHub.
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Typographic Console Interface Showcase -->
+          <div class="hero-product-right">
+            <div class="product-showcase">
+              <div class="app-window-frame">
+                
+                <!-- Title Bar -->
+                <div class="app-titlebar">
+                  <div class="titlebar-meta">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                      <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                      <circle cx="12" cy="20" r="1"></circle>
+                    </svg>
+                    <span>MMMUT WiFi Auto Login — Desktop Client (v3.1)</span>
+                  </div>
+                  <div class="titlebar-controls" aria-hidden="true">
+                    <span>—</span>
+                    <span>□</span>
+                    <span>✕</span>
+                  </div>
+                </div>
+
+                <!-- Console Body -->
+                <div class="app-body">
+                  <div class="app-grid">
+                    
+                    <!-- Network & Handshake State -->
+                    <div class="app-panel">
+                      <div class="app-panel-title">
+                        <span>Gateway Connection Status</span>
+                        <span class="badge badge-success">
+                          <span class="pulse-indicator"></span> Connected
+                        </span>
+                      </div>
+
+                      <div class="app-status-row">
+                        <span style="color: var(--color-text-muted);">Campus Gateway</span>
+                        <span class="code-inline">172.16.1.3:8090</span>
+                      </div>
+                      <div class="app-status-row">
+                        <span style="color: var(--color-text-muted);">Active Identity</span>
+                        <span style="color: var(--color-text-primary); font-weight: 500;">Account 1 (Primary)</span>
+                      </div>
+                      <div class="app-status-row">
+                        <span style="color: var(--color-text-muted);">Portal Response</span>
+                        <span style="color: var(--color-status-success); font-family: var(--font-mono); font-size: 0.78rem;">&lt;status&gt;LIVE&lt;/status&gt;</span>
+                      </div>
+                      <div class="app-status-row">
+                        <span style="color: var(--color-text-muted);">Wi-Fi Association</span>
+                        <span style="color: var(--color-text-secondary);">Strongest MMMUT AP (netsh)</span>
+                      </div>
+                    </div>
+
+                    <!-- Credential Manager Vault -->
+                    <div class="app-panel">
+                      <div class="app-panel-title">
+                        <span>Windows Credential Manager</span>
+                        <span class="badge badge-muted">DPAPI Protected</span>
+                      </div>
+
+                      <div class="app-field-mock">
+                        <span class="app-field-label">Account 1 (Primary Roll Number)</span>
+                        <div class="app-field-input">
+                          <span>2024******</span>
+                          <span style="color: var(--color-status-success); font-size: 0.72rem;">Saved</span>
+                        </div>
+                      </div>
+
+                      <div class="app-field-mock">
+                        <span class="app-field-label">Account 2 (Smart Limit Failover)</span>
+                        <div class="app-field-input">
+                          <span>2023******</span>
+                          <span style="color: var(--color-text-muted); font-size: 0.72rem;">Ready</span>
+                        </div>
+                      </div>
+
+                      <div class="app-status-row" style="margin-top: 2px;">
+                        <span class="app-field-label" style="margin-bottom: 0;">Auto-Start at Boot</span>
+                        <span class="badge" style="font-size: 0.7rem;">HKCU Run Key</span>
+                      </div>
+                    </div>
+
+                    <!-- Real Desktop Client Action Controls -->
+                    <div class="app-actions-mock">
+                      <span class="app-btn-mock active">⟳ Connect</span>
+                      <span class="app-btn-mock">⏻ Logout</span>
+                      <span class="app-btn-mock">⚙ Settings</span>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ====================================================================
+         EDITORIAL FEATURE PRESENTATION (No Generic Identical Cards)
+         ==================================================================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-kicker">// Verified Capabilities</span>
+          <h2 class="headline-section" style="margin-top: 8px;">Engineered for campus reliability.</h2>
+          <p>Cyberoam captive portals expire sessions throughout the day. MMMUT WiFi Auto Login manages connections quietly without browser tabs.</p>
+        </div>
+
+        <div class="editorial-feature-group">
+          
+          <!-- Featured Row 1: Automatic Reconnection (Wide Split) -->
+          <div class="editorial-featured-row">
+            <div>
+              <span class="section-kicker" style="margin-bottom: 8px;">01 / Session Recovery</span>
+              <h3 class="editorial-featured-title">Automatic reconnection when sessions expire.</h3>
+            </div>
+            <div>
+              <p class="body-medium">
+                Re-authenticates automatically when the Cyberoam portal times out or when your laptop wakes from sleep. Eliminates abrupt disconnects in computer labs, lecture halls, and hostels.
+              </p>
+            </div>
+          </div>
+
+          <!-- Duo Row: Failover & Visibility -->
+          <div class="editorial-duo-grid">
+            <div class="editorial-duo-card">
+              <div>
+                <span class="section-kicker" style="margin-bottom: 8px;">02 / Device Limit Failover</span>
+                <h3 class="headline-card" style="margin-bottom: 12px;">Two-account smart failover.</h3>
+                <p class="body-medium">
+                  When your primary account hits the portal's "Maximum Login Limit Reached" error from an active phone session, the application switches to Account 2 without prompting.
+                </p>
+              </div>
+            </div>
+
+            <div class="editorial-duo-card">
+              <div>
+                <span class="section-kicker" style="margin-bottom: 8px;">03 / Minimal Overhead</span>
+                <h3 class="headline-card" style="margin-bottom: 12px;">Boot popup and tray monitor.</h3>
+                <p class="body-medium">
+                  A compact boot toast confirms connection in ~4 seconds and auto-closes. Access settings, manual reconnect, and portal logout anytime from the notification area.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spec Sheet: 3 Technical Architecture Points -->
+          <div class="spec-sheet-grid">
+            <div class="spec-sheet-item">
+              <div class="spec-sheet-tag">Security Architecture</div>
+              <h4 class="headline-card" style="font-size: 1.05rem; margin-bottom: 8px;">Local DPAPI Vault</h4>
+              <p class="body-medium">
+                Credentials are saved into Windows Credential Manager (<span class="code-inline">keyring</span>) with user session encryption. No plain-text files.
+              </p>
+            </div>
+
+            <div class="spec-sheet-item">
+              <div class="spec-sheet-tag">Network Optimization</div>
+              <h4 class="headline-card" style="font-size: 1.05rem; margin-bottom: 8px;">Netsh Wi-Fi Scanner</h4>
+              <p class="body-medium">
+                Scans visible campus networks and associates with the strongest MMMUT access point before initiating portal authentication.
+              </p>
+            </div>
+
+            <div class="spec-sheet-item">
+              <div class="spec-sheet-tag">Session Control</div>
+              <h4 class="headline-card" style="font-size: 1.05rem; margin-bottom: 8px;">Portal Logout Mode 193</h4>
+              <p class="body-medium">
+                Explicit support for Cyberoam Mode 193 lets you disconnect all sessions cleanly before leaving campus.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ====================================================================
+         HOW IT WORKS (Hairline Editorial Steps)
+         ==================================================================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-kicker">// Setup Sequence</span>
+          <h2 class="headline-section" style="margin-top: 8px;">Get started in four steps.</h2>
+          <p>Standard user privileges only. No administrator rights, drivers, or registry tampering required.</p>
+        </div>
+
+        <div class="steps-editorial">
+          <div class="step-item">
+            <span class="step-num">01</span>
+            <h3 class="step-title">Download</h3>
+            <p class="body-medium">
+              Obtain the verified Windows installer from the direct download button or GitHub releases.
+            </p>
+          </div>
+
+          <div class="step-item">
+            <span class="step-num">02</span>
+            <h3 class="step-title">Install</h3>
+            <p class="body-medium">
+              Run <span class="code-inline">MMMUT_WiFi_Auto_Login_Setup.exe</span>. Desktop and Startup shortcuts are configured.
+            </p>
+          </div>
+
+          <div class="step-item">
+            <span class="step-num">03</span>
+            <h3 class="step-title">Configure</h3>
+            <p class="body-medium">
+              Enter your student credentials once. Passwords are saved in Windows Credential Manager.
+            </p>
+          </div>
+
+          <div class="step-item">
+            <span class="step-num">04</span>
+            <h3 class="step-title">Stay Connected</h3>
+            <p class="body-medium">
+              The utility runs quietly in the background, recovering sessions whenever you join campus Wi-Fi.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ====================================================================
+         PRIVACY AND OPEN SOURCE
+         ==================================================================== -->
+    <section class="section">
+      <div class="container">
+        <div class="privacy-editorial">
+          <div class="privacy-header-wrap">
+            <span class="section-kicker">// Privacy Guarantee</span>
+            <h2 class="headline-section" style="margin-top: 8px;">Your credentials never leave your machine.</h2>
+            <p class="body-large" style="margin-top: 12px;">
+              MMMUT WiFi Auto Login has zero remote telemetry. Every line of Python and Inno Setup configuration is auditable on GitHub.
+            </p>
+          </div>
+
+          <div class="privacy-specs-list">
+            <div class="privacy-spec-col">
+              <h4>Local Keyring Storage</h4>
+              <p class="body-medium">
+                Credentials are saved under service <span class="code-inline">MMMUT-WIFI-AUTOLOGIN</span> using OS-level encrypted storage.
+              </p>
+            </div>
+
+            <div class="privacy-spec-col">
+              <h4>Zero Remote Telemetry</h4>
+              <p class="body-medium">
+                The desktop client communicates exclusively with local gateway <span class="code-inline">172.16.1.3:8090</span> and a standard connectivity check.
+              </p>
+            </div>
+
+            <div class="privacy-spec-col">
+              <h4>Standard User Privileges</h4>
+              <p class="body-medium">
+                Runs entirely within normal Windows user permissions without administrative elevation.
+              </p>
+            </div>
+          </div>
+
+          <div class="privacy-actions">
+            <a href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+              <span>View Source on GitHub</span>
+            </a>
+            <a href="https://github.com/nitin99-cyber/wifilogin/releases" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+              <span>Release Changelogs &amp; Hashes</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================
+       SHARED FOOTER (Minimalist Monochrome)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-link">
+            <div class="brand-icon-wrapper" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                <circle cx="12" cy="20" r="1"></circle>
+              </svg>
+            </div>
+            <span>MMMUT WiFi Auto Login</span>
+          </div>
+          <p>
+            Open-source Windows utility for students of Madan Mohan Malaviya University of Technology, Gorakhpur.
+          </p>
+        </div>
+
+        <div class="footer-links-group">
+          <div class="footer-column">
+            <span class="footer-column-title">Navigation</span>
+            <a href="index.html" class="footer-link">Home</a>
+            <a href="team.html" class="footer-link">Team</a>
+            <a href="feedback.html" class="footer-link">Feedback</a>
+          </div>
+
+          <div class="footer-column">
+            <span class="footer-column-title">Resources</span>
+            <a href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub Repository</a>
+            <a href="https://github.com/nitin99-cyber/wifilogin/releases" target="_blank" rel="noopener noreferrer" class="footer-link">Releases &amp; Binaries</a>
+            <a href="https://github.com/nitin99-cyber/wifilogin#readme" target="_blank" rel="noopener noreferrer" class="footer-link open-docs-btn" id="docs-btn">System Docs</a>
+          </div>
+
+          <div class="footer-column">
+            <span class="footer-column-title">Download</span>
+            <a href="https://drive.google.com/file/d/1-xY0tCtlCjL6G8ZW8sxLbkq2X3PECyka/view?usp=drive_link" class="footer-link track-download">Windows Setup Installer</a>
+            <span class="body-small">Windows 10 / 11 64-bit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>Created by Nitin Deep • B.Tech CSE '29, MMMUT Gorakhpur</div>
+        <div>Released under the MIT License</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       CONTENT MODAL OVERLAY (System Docs / Readme)
+       ====================================================================== -->
+  <div class="modal-overlay" id="content-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-surface">
+      <div class="modal-header">
+        <h2 id="modal-title" style="font-size: 1.15rem; font-family: var(--font-display);">System Documentation</h2>
+        <button class="icon-btn" id="modal-close" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <p>Loading documentation content...</p>
+      </div>
+      <div class="modal-footer" id="modal-footer" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript (Firebase & UI Logic) -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

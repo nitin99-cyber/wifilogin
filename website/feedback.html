@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback &amp; Reviews — MMMUT WiFi Auto Login</title>
+  <meta name="description" content="Share feedback, rate the application, or report bugs for MMMUT WiFi Auto Login. Your input helps improve Wi-Fi connectivity across campus.">
+
+  <!-- Security Policies -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://www.google-analytics.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src https://fonts.gstatic.com;
+    img-src 'self' data: https:;
+    connect-src 'self' https://firestore.googleapis.com https://www.google-analytics.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+    frame-ancestors 'none';
+  ">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+
+  <!-- Google Fonts: Inter (UI/Body), Outfit (Display), JetBrains Mono (Technical) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCWC2VTY8K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QCWC2VTY8K');
+  </script>
+
+  <!-- Pure-Black Minimalist Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ======================================================================
+       HEADER & NAVIGATION (Matte Black, Understated)
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-link" aria-label="MMMUT WiFi Auto Login Home">
+        <div class="brand-icon-wrapper" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <circle cx="12" cy="20" r="1"></circle>
+          </svg>
+        </div>
+        <span>MMMUT WiFi Login</span>
+        <span class="brand-badge">v3.1</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="team.html" class="nav-link">Team</a></li>
+          <li><a href="feedback.html" class="nav-link active" aria-current="page">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://drive.google.com/file/d/1-xY0tCtlCjL6G8ZW8sxLbkq2X3PECyka/view?usp=drive_link" class="btn btn-primary btn-sm track-download" id="nav-download-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download</span>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div class="mobile-nav-menu" id="mobile-nav-menu">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="team.html" class="nav-link">Team</a>
+      <a href="feedback.html" class="nav-link active">Feedback</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================================================================
+         FEEDBACK SECTION (Editorial Form)
+         ==================================================================== -->
+    <section class="section">
+      <div class="container container-narrow">
+        
+        <!-- Page Introduction -->
+        <div class="section-header centered">
+          <span class="section-kicker">// User Reviews &amp; Suggestions</span>
+          <h1 class="headline-section" style="margin-top: 8px;">Feedback &amp; Reviews</h1>
+          <p>Your input helps improve connection reliability and bug resolution for students across campus.</p>
+        </div>
+
+        <!-- Feedback Form Panel -->
+        <div class="feedback-panel">
+          <form id="feedback-form" class="m3-form" novalidate>
+            
+            <!-- Category Selection -->
+            <div class="form-group">
+              <label for="feedback-category" class="form-label">Category</label>
+              <select id="feedback-category" class="form-select">
+                <option value="General Feedback">General Feedback</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Feature Request">Feature Request</option>
+              </select>
+            </div>
+
+            <!-- Five-Star Rating Component -->
+            <div class="form-group">
+              <span class="form-label" id="rating-group-label" style="justify-content: center;">Software Rating</span>
+              <div class="star-rating-container" role="radiogroup" aria-labelledby="rating-group-label">
+                <div class="star-rating-input">
+                  <input type="radio" id="star5" name="rating" value="5" aria-label="5 stars out of 5">
+                  <label for="star5" title="5 stars">★</label>
+                  
+                  <input type="radio" id="star4" name="rating" value="4" aria-label="4 stars out of 5">
+                  <label for="star4" title="4 stars">★</label>
+                  
+                  <input type="radio" id="star3" name="rating" value="3" aria-label="3 stars out of 5">
+                  <label for="star3" title="3 stars">★</label>
+                  
+                  <input type="radio" id="star2" name="rating" value="2" aria-label="2 stars out of 5">
+                  <label for="star2" title="2 stars">★</label>
+                  
+                  <input type="radio" id="star1" name="rating" value="1" aria-label="1 star out of 5">
+                  <label for="star1" title="1 star">★</label>
+                </div>
+                <div class="rating-display-label" id="rating-display" aria-live="polite">
+                  Select a rating (1 to 5 stars)
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback Message -->
+            <div class="form-group">
+              <label for="reviewer-text" class="form-label">Your Feedback</label>
+              <textarea 
+                id="reviewer-text" 
+                class="form-textarea" 
+                rows="4" 
+                placeholder="Share your experience, describe a problem you encountered on campus Wi-Fi, or suggest a new feature..." 
+                required 
+                minlength="5" 
+                maxlength="1000"
+                spellcheck="false"
+              ></textarea>
+            </div>
+
+            <!-- Optional Name & Email -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="reviewer-name" class="form-label">
+                  Name <span class="optional-tag">(Optional)</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="reviewer-name" 
+                  class="form-input" 
+                  placeholder="e.g. Student" 
+                  maxlength="100"
+                  autocomplete="name"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="reviewer-email" class="form-label">
+                  Email <span class="optional-tag">(Optional)</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="reviewer-email" 
+                  class="form-input" 
+                  placeholder="For follow-up" 
+                  maxlength="100"
+                  autocomplete="email"
+                >
+              </div>
+            </div>
+
+            <!-- Anti-Bot Honeypot Field -->
+            <div style="display: none;" aria-hidden="true">
+              <input type="text" id="hp-field" name="website" tabindex="-1" autocomplete="off">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="feedback-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 4px;">
+              Submit Feedback
+            </button>
+
+            <!-- Status Message Container -->
+            <div id="review-status-msg" class="status-msg" role="status" aria-live="polite"></div>
+          </form>
+
+          <!-- Privacy Reassurance Callout -->
+          <div class="privacy-notice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <div>
+              <strong>Privacy Note:</strong> Feedback submitted here is used directly by the developers to diagnose connection issues. Student credentials are never collected or stored through this form.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================================================================
+       SHARED FOOTER (Minimalist Monochrome)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-link">
+            <div class="brand-icon-wrapper" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                <circle cx="12" cy="20" r="1"></circle>
+              </svg>
+            </div>
+            <span>MMMUT WiFi Auto Login</span>
+          </div>
+          <p>
+            Open-source Windows utility for students of Madan Mohan Malaviya University of Technology, Gorakhpur.
+          </p>
+        </div>
+
+        <div class="footer-links-group">
+          <div class="footer-column">
+            <span class="footer-column-title">Navigation</span>
+            <a href="index.html" class="footer-link">Home</a>
+            <a href="team.html" class="footer-link">Team</a>
+            <a href="feedback.html" class="footer-link">Feedback</a>
+          </div>
+
+          <div class="footer-column">
+            <span class="footer-column-title">Resources</span>
+            <a href="https://github.com/nitin99-cyber/wifilogin" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub Repository</a>
+            <a href="https://github.com/nitin99-cyber/wifilogin/releases" target="_blank" rel="noopener noreferrer" class="footer-link">Releases &amp; Binaries</a>
+            <a href="https://github.com/nitin99-cyber/wifilogin#readme" target="_blank" rel="noopener noreferrer" class="footer-link open-docs-btn" id="docs-btn">System Docs</a>
+          </div>
+
+          <div class="footer-column">
+            <span class="footer-column-title">Download</span>
+            <a href="https://drive.google.com/file/d/1-xY0tCtlCjL6G8ZW8sxLbkq2X3PECyka/view?usp=drive_link" class="footer-link track-download">Windows Setup Installer</a>
+            <span class="body-small">Windows 10 / 11 64-bit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>Created by Nitin Deep • B.Tech CSE '29, MMMUT Gorakhpur</div>
+        <div>Released under the MIT License</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Content Modal Overlay (System Docs / Readme) -->
+  <div class="modal-overlay" id="content-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-surface">
+      <div class="modal-header">
+        <h2 id="modal-title" style="font-size: 1.15rem; font-family: var(--font-display);">System Documentation</h2>
+        <button class="icon-btn" id="modal-close" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <p>Loading documentation content...</p>
+      </div>
+      <div class="modal-footer" id="modal-footer" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript (Firebase, Analytics & Nav Logic) -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

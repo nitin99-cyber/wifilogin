@@ -19,12 +19,13 @@ import {
 // 🔴 FIREBASE CONFIGURATION (USER MUST FILL)
 // ==========================================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBwIQBibLm6F65wRaK8u5JhEnMv13YjQ_M",
+  authDomain: "wifilogin-b9c52.firebaseapp.com",
+  projectId: "wifilogin-b9c52",
+  storageBucket: "wifilogin-b9c52.firebasestorage.app",
+  messagingSenderId: "870436247754",
+  appId: "1:870436247754:web:0522a0f9aa19da9192bc33",
+  measurementId: "G-6QYK9390CX"
 };
 
 let app, auth, db;
