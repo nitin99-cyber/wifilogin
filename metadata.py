@@ -8,7 +8,7 @@ mismatch cannot happen for values kept in this file.
 """
 
 APP_NAME = "MMMUT WiFi Auto Login"
-VERSION = "3.1.0"
+VERSION = "3.0.0"
 AUTHOR = "Nitin Deep"
 DESCRIPTION = (
     "Automatic login and live connection\n"

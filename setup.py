@@ -1,35 +1,98 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+"""
+setup.py — The setup wizard and management window.
+
+WHAT CHANGED IN v3
+──────────────────
+1. RESOLUTION SAFETY. v2 hardcoded window sizes in raw pixels:
+
+       center_window(root, 380, 680)
+       center_window(about_win, 460, 920)
+
+   920 px does not fit on a 768 px laptop screen, and because the dialog was
+   `resizable(False, False)` with no scrolling, the Close button sat below the
+   bottom edge where no click could ever reach it. At 150% Windows scaling the
+   same dialog wanted 1380 physical pixels of height. Every window here now
+   asks for a size in dp, gets clamped to the real work area, and puts its
+   content inside a ScrollableFrame so nothing is ever unreachable.
+
+2. ONE SCROLLBAR, NOT TWO. v2 nested a fixed `height=260` account canvas
+   inside a non-scrolling window. Two independent scroll regions on one screen
+   is confusing, and the wheel target became ambiguous. The inner canvas is
+   gone; the whole window scrolls as one surface.
+
+3. NO DUPLICATED LOGIN LOGIC. v2's `run_connect_flow` was a second, slightly
+   different copy of the boot login sequence, so a fix in one place did not
+   fix the other. Both now call SessionManager, which means the Connect button
+   gets single-flight protection and logout suppression for free (FR-18).
+
+4. REUSABLE WINDOW. `build()` populates any Tk or Toplevel, so the monitor
+   popup can open Settings as a child window instead of spawning a second Tk
+   interpreter in the same process — which does not work.
+"""
+
+from __future__ import annotations
+
 import sys
 import threading
 import time
+import tkinter as tk
 from pathlib import Path
+from tkinter import messagebox, ttk
 
-from credential_manager import save_account, load_accounts, delete_all_accounts
-from config_manager import load_config, save_config
-from startup import add_to_startup, remove_from_startup, is_startup_enabled
-from internet import is_connected
-from network import is_cyberoam_network
-from wifi_scanner import connect_to_best_mmmut
-from login import login, logout
-from logger import log
 import metadata
+import ui_scale
+from config_manager import load_config, save_config
+from credential_manager import (
+    MAX_ACCOUNTS,
+    delete_all_accounts,
+    load_accounts,
+    save_account,
+)
+from logger import log
+from session_manager import SessionManager
+from startup import add_to_startup, is_startup_enabled, remove_from_startup
+from ui_scale import ScrollableFrame, dp
 
-# Retry settings (same as app.py for consistency)
-MAX_PORTAL_RETRIES = 15
-RETRY_INTERVAL = 1
-WIFI_SETTLE_DELAY = 1
+# Requested window sizes, in density-independent pixels. These are wishes,
+# not commands — fit_size() clamps them to whatever the display can show.
+MAIN_W_DP = 420
+MAIN_H_DP = 680
+MAIN_MIN_W_DP = 360
+MAIN_MIN_H_DP = 420
+
+ABOUT_W_DP = 480
+ABOUT_H_DP = 720
+ABOUT_MIN_W_DP = 340
+ABOUT_MIN_H_DP = 360
+
+# How long a one-off message (e.g. "Credentials saved") stays on screen before
+# the label reverts to reporting live session state.
+FLASH_SECONDS = 4.0
+
+# How often the status line re-reads the session state.
+STATUS_POLL_MS = 800
+
+COLOR_MUTED = "#64748b"
+COLOR_INFO = "#2563eb"
+COLOR_OK = "#16a34a"
+COLOR_ERROR = "#dc2626"
 
 
-# ── Helper functions ──────────────────────────────────────────────────
+# ── Window helpers ────────────────────────────────────────────────────
 
 
-def center_window(window: tk.Toplevel | tk.Tk, width: int, height: int):
-    """Center a Tkinter window on screen."""
-    window.update_idletasks()
-    x = (window.winfo_screenwidth() // 2) - (width // 2)
-    y = (window.winfo_screenheight() // 2) - (height // 2)
-    window.geometry(f"{width}x{height}+{x}+{y}")
+def center_window(window: tk.Toplevel | tk.Tk, width_dp: float,
+                  height_dp: float, min_w_dp: float | None = None,
+                  min_h_dp: float | None = None):
+    """
+    Size and centre a window using dp units and the real work area.
+
+    Kept under its original name so the call sites read the same as before,
+    but the arguments are now density-independent and the result is clamped
+    to the usable desktop rather than trusting the caller's pixel guess.
+    """
+    ui_scale.place_center(window, width_dp, height_dp,
+                          min_w_dp=min_w_dp, min_h_dp=min_h_dp)
 
 
 def get_icon_path() -> str:
@@ -42,101 +105,125 @@ def get_icon_path() -> str:
 
 
 def set_icon(window: tk.Toplevel | tk.Tk):
-    """Safely set the window icon."""
+    """Set the window icon, ignoring failure (a missing icon is cosmetic)."""
     try:
         window.iconbitmap(get_icon_path())
     except Exception:
         pass
 
 
-# ── About Dialog ──────────────────────────────────────────────────────
+# ── About dialog ──────────────────────────────────────────────────────
 
 
-def open_about(parent: tk.Tk):
-    """Open the About modal dialog."""
+def open_about(parent: tk.Misc):
+    """
+    Open the About dialog.
+
+    This is the window that was broken on every ordinary laptop in v2. Three
+    changes fix it: the content lives in a ScrollableFrame, the window is
+    resizable, and its height is clamped to the work area. It now asks for
+    720 dp and gracefully accepts 620 px on a small screen.
+    """
     about_win = tk.Toplevel(parent)
     about_win.title(f"About - {metadata.APP_NAME}")
-    about_win.resizable(False, False)
-    center_window(about_win, 460, 920)
-    about_win.transient(parent)
+    about_win.resizable(True, True)
+    center_window(about_win, ABOUT_W_DP, ABOUT_H_DP,
+                  ABOUT_MIN_W_DP, ABOUT_MIN_H_DP)
+    about_win.transient(parent if isinstance(parent, (tk.Tk, tk.Toplevel))
+                        else about_win.master)
     about_win.grab_set()
     set_icon(about_win)
 
-    frame = ttk.Frame(about_win, padding=20)
+    scroller = ScrollableFrame(about_win)
+    scroller.pack(fill="both", expand=True)
+
+    frame = ttk.Frame(scroller.body, padding=dp(20))
     frame.pack(fill="both", expand=True)
 
-    # Title
+    def heading(text: str):
+        ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=dp(10))
+        ttk.Label(frame, text=text,
+                  font=("Segoe UI", 10, "bold")).pack(anchor="w")
+
+    def bullets(items):
+        for item in items:
+            ttk.Label(frame, text=item, font=("Segoe UI", 9),
+                      wraplength=dp(ABOUT_W_DP - 70),
+                      justify="left").pack(anchor="w", padx=dp(10))
+
     ttk.Label(frame, text=metadata.APP_NAME,
               font=("Segoe UI", 16, "bold")).pack()
     ttk.Label(frame, text=f"Version {metadata.VERSION}",
-              font=("Segoe UI", 10)).pack(pady=(0, 10))
-    ttk.Label(frame, text=metadata.DESCRIPTION,
-              justify="center").pack()
+              font=("Segoe UI", 10)).pack(pady=(0, dp(10)))
+    ttk.Label(frame, text=metadata.DESCRIPTION, justify="center",
+              wraplength=dp(ABOUT_W_DP - 60)).pack()
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
+    heading("What's new in 3.0")
+    bullets([
+        "• Reconnects automatically after sleep or Wi-Fi loss",
+        "• Live download and upload speed monitor",
+        "• Connection quality, band, latency and signal on hover",
+        "• Compact overlay that stays out of the way",
+        "• Correct layout at any screen size or display scaling",
+    ])
 
-    # Features
-    ttk.Label(frame, text="Features",
-              font=("Segoe UI", 10, "bold")).pack(anchor="w")
-    for feature in ["• Automatic Login", "• Secure Credential Storage",
-                     "• Multiple Account Support", "• Portal Logout",
-                     "• Boot Status Popup", "• Windows Startup",
-                     "• Lightweight"]:
-        ttk.Label(frame, text=feature).pack(anchor="w", padx=10)
+    heading("Features")
+    bullets([
+        "• Automatic login",
+        "• Secure credential storage (Windows Credential Manager)",
+        "• Multiple account support with automatic failover",
+        "• Portal logout",
+        "• Starts with Windows",
+        "• Lightweight — no background service, no installer bloat",
+    ])
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
-
-    # Privacy
-    ttk.Label(frame, text="Privacy",
-              font=("Segoe UI", 10, "bold")).pack(anchor="w")
-    for point in [
+    heading("Privacy")
+    bullets([
         "• No passwords are uploaded.",
         "• No personal data is collected.",
-        "• No analytics are used.",
+        "• No analytics or telemetry are used.",
         "• Credentials are stored only on your computer.",
-        "• The application only communicates with the official MMMUT login portal."
-    ]:
-        ttk.Label(frame, text=point).pack(anchor="w", padx=10)
+        "• Passwords are never written to the log file.",
+        "• The app talks only to the official MMMUT login portal.",
+    ])
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
-
-    # How Logout Works
-    ttk.Label(frame, text="How Logout Works",
-              font=("Segoe UI", 10, "bold")).pack(anchor="w")
-    for line in [
-        "Logout ends your portal session instantly —",
-        "no need to wait for session expiry.",
+    heading("How logout works")
+    bullets([
+        "Logout ends your portal session immediately — you do not",
+        "have to wait for it to expire.",
         "",
-        "⚠ Logout disconnects ALL devices using",
-        "that username, not just the current one.",
+        "⚠ Logout disconnects EVERY device using that username,",
+        "not just this one.",
         "",
-        "Example: If Account 1 is on Phone & Laptop,",
-        "logging out Account 1 disconnects both.",
-        "Account 2 on another device stays connected.",
+        "Example: if Account 1 is signed in on your phone and your",
+        "laptop, logging out Account 1 disconnects both. Account 2",
+        "on another device stays connected.",
         "",
-        "Tip: Use different accounts on different",
-        "devices to log out selectively.",
-    ]:
-        ttk.Label(frame, text=line,
-                  font=("Segoe UI", 9)).pack(anchor="w", padx=10)
+        "After you log out, automatic login stays switched off until",
+        "you press Connect again — the app will not quietly sign you",
+        "back in.",
+        "",
+        "Tip: use different accounts on different devices so you can",
+        "log out selectively.",
+    ])
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
+    heading("Developer")
+    ttk.Label(frame, text=f"{metadata.AUTHOR}\nB.Tech CSE'29",
+              font=("Segoe UI", 9)).pack(anchor="w", padx=dp(10))
 
-    # Developer
-    ttk.Label(frame, text="Developer",
-              font=("Segoe UI", 10, "bold")).pack(anchor="w")
-    ttk.Label(frame, text=f"{metadata.AUTHOR}\nB.Tech CSE'29").pack(
-        anchor="w", padx=10)
+    heading("Links")
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
-
-    # Links
     def add_link_row(label: str, text: str):
+        # Skip blanks: an empty "Website:" row looks like a bug.
+        if not text:
+            return
         row = ttk.Frame(frame)
-        row.pack(fill="x", pady=2)
+        row.pack(fill="x", pady=dp(2))
         ttk.Label(row, text=label, width=10,
                   font=("Segoe UI", 9, "bold")).pack(side="left")
-        ttk.Label(row, text=text).pack(side="left")
+        ttk.Label(row, text=text, font=("Segoe UI", 9),
+                  wraplength=dp(ABOUT_W_DP - 140),
+                  justify="left").pack(side="left")
 
     add_link_row("GitHub", metadata.GITHUB_URL)
     add_link_row("Website", metadata.WEBSITE)
@@ -144,361 +231,343 @@ def open_about(parent: tk.Tk):
     add_link_row("License", metadata.LICENSE)
     add_link_row("Copyright", metadata.COPYRIGHT)
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
-
-    # Message
+    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=dp(10))
     ttk.Label(
         frame,
         text=("Made for MMMUT students.\n"
-              "Please leave a review and stay updated with the\n"
-              "developer for the next version with rich feature support."),
-        justify="center"
-    ).pack(pady=(0, 10))
+              "Feedback and issues are welcome on GitHub."),
+        justify="center", font=("Segoe UI", 9),
+    ).pack(pady=(0, dp(10)))
 
     ttk.Button(frame, text="Close",
-               command=about_win.destroy).pack(pady=(5, 0))
+               command=about_win.destroy).pack(pady=(dp(5), 0))
+
+    scroller.scroll_to_top()
 
 
-# ── Status update helper ──────────────────────────────────────────────
+# ── Status line ───────────────────────────────────────────────────────
 
 
-def update_status(label: tk.Label, text: str, color: str = "#334155"):
-    """Thread-safe status label update."""
-    label.after(0, lambda: (
-        label.config(text=text, foreground=color)
-    ))
+class _StatusPresenter:
+    """
+    Drives the status label.
 
+    Two kinds of message compete for one line:
 
-# ── Connect flow (runs in background thread) ─────────────────────────
+      * SESSION STATE — "Connected", "Reconnecting…". Owned by SessionManager
+        and changed by worker threads.
+      * LOCAL EVENTS — "Credentials saved", "Auto-start enabled". Owned by
+        this window and irrelevant to the session.
 
+    Rather than have threads write to the widget (unsafe) or fight over it,
+    the label polls session state on a Tk timer and a local event temporarily
+    overrides it for a few seconds. Everything therefore happens on the Tk
+    main thread, and `flash()` is safe to call from anywhere.
+    """
 
-def run_connect_flow(status_label: tk.Label, username: str, password: str):
-    """Detect portal and login. Runs in a background thread."""
+    def __init__(self, label: tk.Label, session: SessionManager):
+        self._label = label
+        self._session = session
+        self._flash_text = ""
+        self._flash_color = COLOR_MUTED
+        self._flash_until = 0.0
+        self._after_id: str | None = None
 
-    # Step 1: Quick internet check
-    update_status(status_label, "Checking internet...", "#64748b")
-    if is_connected():
-        update_status(status_label, "✓ Already connected to the internet",
-                      "#16a34a")
-        return
+    def flash(self, text: str, color: str = COLOR_MUTED,
+              seconds: float = FLASH_SECONDS):
+        """Show a transient message. Safe to call from any thread."""
+        self._flash_text = text
+        self._flash_color = color
+        self._flash_until = time.monotonic() + seconds
 
-    # Step 2: Scan & connect to best MMMUT WiFi
-    update_status(status_label, "Scanning for MMMUT Wi-Fi...", "#64748b")
-    ssid = connect_to_best_mmmut()
+    def start(self):
+        self._tick()
 
-    if ssid:
-        update_status(status_label,
-                      f"● Connected to {ssid}", "#2563eb")
-        time.sleep(WIFI_SETTLE_DELAY)
-    else:
-        update_status(status_label,
-                      "No MMMUT Wi-Fi found. Checking portal...", "#64748b")
+    def stop(self):
+        if self._after_id is not None:
+            try:
+                self._label.after_cancel(self._after_id)
+            except tk.TclError:
+                pass
+            self._after_id = None
 
-    # Step 3: Quick portal detection
-    update_status(status_label, "Detecting MMMUT portal...", "#64748b")
-
-    portal_found = False
-    for attempt in range(1, MAX_PORTAL_RETRIES + 1):
-        update_status(
-            status_label,
-            f"Detecting MMMUT portal... ({attempt}/{MAX_PORTAL_RETRIES})",
-            "#64748b"
-        )
-        if is_cyberoam_network():
-            portal_found = True
-            break
-        time.sleep(RETRY_INTERVAL)
-
-    if not portal_found:
-        update_status(status_label,
-                      "✗ Not on MMMUT network", "#dc2626")
-        return
-
-    update_status(status_label, "● Portal detected", "#2563eb")
-
-    # Step 4: Login
-    accounts = load_accounts()
-    if not accounts:
-        # Fallback if somehow load fails
-        accounts = [{"username": username, "password": password}]
-
-    for i, acc in enumerate(accounts):
-        user = acc["username"]
-        pwd = acc["password"]
-        acc_label = "primary" if i == 0 else "backup"
-
-        update_status(status_label,
-                      f"● Logging in as {user}...", "#2563eb")
-
+    def _tick(self):
         try:
-            status, message = login(user, pwd)
-            log(f"GUI login ({acc_label}): {status} - {message}")
+            if self._flash_text and time.monotonic() < self._flash_until:
+                text, color = self._flash_text, self._flash_color
+            else:
+                self._flash_text = ""
+                text = f"Status: {self._session.status_text()}"
+                detail = self._session.detail
+                if detail and detail not in text:
+                    text = f"{text} — {detail}"
+                color = COLOR_MUTED
+            self._label.config(text=text, fg=color)
+        except tk.TclError:
+            return  # Window closed mid-tick; stop quietly.
 
-            if status == "LIVE":
-                update_status(status_label,
-                              "✓ Login successful!", "#16a34a")
-                return
-        except Exception as e:
-            log(f"Error during login ({acc_label}): {e}")
-
-    # If we get here, all accounts failed
-    update_status(status_label, "✗ Login failed for all accounts", "#dc2626")
+        self._after_id = self._label.after(STATUS_POLL_MS, self._tick)
 
 
-# ── Main Setup Window ─────────────────────────────────────────────────
+# ── Window construction ───────────────────────────────────────────────
 
 
-def run():
-    """Launch the setup / management window."""
-    root = tk.Tk()
-    root.title(metadata.APP_NAME)
-    root.resizable(False, False)
-    set_icon(root)
+def build(window: tk.Tk | tk.Toplevel,
+          session: SessionManager | None = None) -> _StatusPresenter:
+    """
+    Populate `window` with the management UI.
 
-    # Main scrollable frame
-    frame = ttk.Frame(root, padding=20)
+    Split out from `run()` so the same UI can be a standalone Tk root at first
+    launch or a Toplevel opened from the monitor popup later. Returns the
+    status presenter so the caller can stop its timer on close.
+    """
+    if session is None:
+        session = SessionManager()
+
+    window.title(metadata.APP_NAME)
+    window.resizable(True, True)
+    set_icon(window)
+
+    # One scroll surface for the whole window. On a large monitor the
+    # scrollbar hides itself and this looks exactly like a plain frame.
+    scroller = ScrollableFrame(window)
+    scroller.pack(fill="both", expand=True)
+
+    frame = ttk.Frame(scroller.body, padding=dp(20))
     frame.pack(fill="both", expand=True)
 
-    # ── Header ──
+    # -- header ------------------------------------------------------
     ttk.Label(frame, text=metadata.APP_NAME,
               font=("Segoe UI", 16, "bold")).pack()
     ttk.Label(frame, text=f"Version {metadata.VERSION}",
-              font=("Segoe UI", 10)).pack(pady=(0, 10))
+              font=("Segoe UI", 10)).pack(pady=(0, dp(10)))
+    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=(0, dp(15)))
 
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=(0, 15))
-
-    # ── Credential Form ──
+    # -- accounts ----------------------------------------------------
     form_frame = ttk.Frame(frame)
-    form_frame.pack(fill="x")
+    form_frame.pack(fill="both", expand=True)
 
-    ttk.Label(form_frame, text="Username 1").pack(anchor="w")
-    username1_entry = ttk.Entry(form_frame)
-    username1_entry.pack(fill="x", pady=(2, 10))
+    ttk.Label(form_frame, text=f"Accounts (1-{MAX_ACCOUNTS})",
+              font=("Segoe UI", 10, "bold")).pack(anchor="w")
+    ttk.Label(form_frame,
+              text="Account 1 is required. Later accounts are tried in order.",
+              foreground=COLOR_MUTED,
+              wraplength=dp(MAIN_W_DP - 60),
+              justify="left").pack(anchor="w", pady=(dp(2), dp(6)))
 
-    ttk.Label(form_frame, text="Password").pack(anchor="w")
-    password1_entry = ttk.Entry(form_frame, show="*")
-    password1_entry.pack(fill="x", pady=(2, 15))
+    # A plain frame, not a nested canvas: the outer ScrollableFrame already
+    # provides scrolling, and two scroll regions would compete for the wheel.
+    accounts_frame = ttk.Frame(form_frame)
+    accounts_frame.pack(fill="x")
 
-    ttk.Label(form_frame, text="Username 2 (Optional)").pack(anchor="w")
-    username2_entry = ttk.Entry(form_frame)
-    username2_entry.pack(fill="x", pady=(2, 10))
+    account_entries: list[tuple[ttk.LabelFrame, ttk.Entry, ttk.Entry]] = []
 
-    ttk.Label(form_frame, text="Password").pack(anchor="w")
-    password2_entry = ttk.Entry(form_frame, show="*")
-    password2_entry.pack(fill="x", pady=(2, 15))
-
-    # ── Auto-start checkbox ──
-    startup_var = tk.BooleanVar(value=True)
-    ttk.Checkbutton(
-        form_frame,
-        text="Start automatically with Windows",
-        variable=startup_var
-    ).pack(anchor="w", pady=(0, 15))
-
-    # ── Status Label ──
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=(5, 10))
-
-    status_label = tk.Label(
-        frame,
-        text="Status: Ready",
-        font=("Segoe UI", 10),
-        fg="#64748b",
-        anchor="w"
-    )
-    status_label.pack(fill="x", pady=(0, 10))
-
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=(0, 10))
-
-    # ── Pre-fill credentials if returning user ──
-    config = load_config()
-    existing_accounts = load_accounts()
-    is_returning_user = config.get("setup_completed", False)
-
-    if existing_accounts:
-        # Fill account 1
-        acc1 = existing_accounts[0]
-        username1_entry.insert(0, acc1.get("username", ""))
-        password1_entry.insert(0, acc1.get("password", ""))
-
-        # Fill account 2 if it exists
-        if len(existing_accounts) > 1:
-            acc2 = existing_accounts[1]
-            username2_entry.insert(0, acc2.get("username", ""))
-            password2_entry.insert(0, acc2.get("password", ""))
-
-    # Pre-fill startup checkbox from config
-    startup_var.set(config.get("startup_enabled", True))
-
-    # ── Save & Connect ──
-    def save_and_connect():
-        """Save credentials, update startup, then run the connect flow."""
-        username1 = username1_entry.get().strip()
-        password1 = password1_entry.get().strip()
-        username2 = username2_entry.get().strip()
-        password2 = password2_entry.get().strip()
-
-        if not username1 or not password1:
-            messagebox.showerror("Error", "Account 1 is required.")
+    def add_account_row(username: str = "", password: str = ""):
+        """Append one editable account row, up to the supported limit."""
+        if len(account_entries) >= MAX_ACCOUNTS:
+            messagebox.showinfo(
+                "Account limit",
+                f"You can add up to {MAX_ACCOUNTS} accounts.")
             return
 
-        # Save credentials
-        update_status(status_label, "Saving credentials...", "#64748b")
-        save_account(1, username1, password1)
-        if username2 and password2:
-            save_account(2, username2, password2)
+        index = len(account_entries) + 1
+        row = ttk.LabelFrame(accounts_frame, text=f"Account {index}",
+                             padding=dp(8))
+        row.pack(fill="x", pady=(0, dp(6)))
 
-        # Update config
-        new_config = {
-            "setup_completed": True,
-            "startup_enabled": startup_var.get()
-        }
-        save_config(new_config)
+        username_entry = ttk.Entry(row)
+        password_entry = ttk.Entry(row, show="*")
 
-        # Update startup
+        ttk.Label(row, text="Username").grid(
+            row=0, column=0, sticky="w", padx=(0, dp(8)))
+        username_entry.grid(row=0, column=1, sticky="ew")
+        ttk.Label(row, text="Password").grid(
+            row=1, column=0, sticky="w", padx=(0, dp(8)), pady=(dp(5), 0))
+        password_entry.grid(row=1, column=1, sticky="ew", pady=(dp(5), 0))
+        row.columnconfigure(1, weight=1)
+
+        username_entry.insert(0, username)
+        password_entry.insert(0, password)
+        account_entries.append((row, username_entry, password_entry))
+
+    for account in load_accounts():
+        add_account_row(account.get("username", ""),
+                        account.get("password", ""))
+    if not account_entries:
+        add_account_row()
+
+    ttk.Button(form_frame, text="+ Add Account",
+               command=add_account_row).pack(anchor="w", pady=(dp(5), dp(10)))
+
+    # -- startup toggle ----------------------------------------------
+    startup_var = tk.BooleanVar(value=True)
+    ttk.Checkbutton(form_frame, text="Start automatically with Windows",
+                    variable=startup_var).pack(anchor="w", pady=(0, dp(15)))
+
+    # -- status line -------------------------------------------------
+    ttk.Separator(frame, orient="horizontal").pack(
+        fill="x", pady=(dp(5), dp(10)))
+
+    status_label = tk.Label(frame, text="Status: Ready",
+                            font=("Segoe UI", 10), fg=COLOR_MUTED,
+                            anchor="w", justify="left",
+                            wraplength=dp(MAIN_W_DP - 60))
+    status_label.pack(fill="x", pady=(0, dp(10)))
+
+    status = _StatusPresenter(status_label, session)
+
+    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=(0, dp(10)))
+
+    # -- saved configuration -----------------------------------------
+    config = load_config()
+    is_returning_user = config.get("setup_completed", False)
+    startup_var.set(config.get("startup_enabled", True))
+
+    # -- actions -----------------------------------------------------
+
+    def collect_credentials() -> list[tuple[str, str]] | None:
+        """Read and validate the form. Returns None if invalid."""
+        credentials = [
+            (username.get().strip(), password.get().strip())
+            for _, username, password in account_entries
+        ]
+        # Drop trailing rows the user left completely blank.
+        while credentials and not credentials[-1][0] and not credentials[-1][1]:
+            credentials.pop()
+
+        if not credentials or not credentials[0][0] or not credentials[0][1]:
+            messagebox.showerror("Error", "Account 1 is required.")
+            return None
+        if any(not user or not pwd for user, pwd in credentials):
+            messagebox.showerror(
+                "Error", "Complete each account or clear its empty row.")
+            return None
+        return credentials
+
+    def save_and_connect():
+        """Save credentials and hand authentication to the session manager."""
+        credentials = collect_credentials()
+        if credentials is None:
+            return
+
+        status.flash("Saving credentials...", COLOR_MUTED)
+        delete_all_accounts()
+        for index, (username, password) in enumerate(credentials, start=1):
+            save_account(index, username, password)
+
+        save_config({"setup_completed": True,
+                     "startup_enabled": startup_var.get()})
+
         if startup_var.get():
             add_to_startup()
         else:
             remove_from_startup()
 
         log("Credentials saved. Starting connect flow.")
-
-        # Show management buttons now that credentials exist
         _show_management_buttons()
 
-        # Run connect flow in background thread
-        thread = threading.Thread(
-            target=run_connect_flow,
-            args=(status_label, username1, password1),
-            daemon=True
-        )
-        thread.start()
+        def worker():
+            # manual=True: the user pressed a button, so this also clears any
+            # logout suppression left over from an earlier Logout (FR-17/18).
+            success, message = session.authenticate(manual=True)
+            status.flash(
+                ("✓ " if success else "✗ ") + message,
+                COLOR_OK if success else COLOR_ERROR,
+            )
 
-    # ── Buttons ──
-    buttons_frame = ttk.Frame(frame)
-    buttons_frame.pack(fill="x", pady=(0, 5))
-
-    ttk.Button(
-        buttons_frame, text="Save & Connect",
-        command=save_and_connect
-    ).pack(side="left", fill="x", expand=True, padx=(0, 3))
+        threading.Thread(target=worker, name="setup-connect",
+                         daemon=True).start()
 
     def do_logout():
-        """Log out all saved accounts from the portal."""
-        accounts = load_accounts()
-        if not accounts:
-            update_status(status_label, "No saved credentials", "#dc2626")
+        """Log every saved account out and stop auto-login."""
+        if not load_accounts():
+            status.flash("No saved credentials", COLOR_ERROR)
             return
 
-        def _logout_thread():
-            update_status(status_label, "Logging out...", "#64748b")
-            for acc in accounts:
-                username = acc["username"]
-                try:
-                    status, message = logout(username)
-                    log(f"Logout {username}: {status} - {message}")
-                except Exception as e:
-                    log(f"Logout error for {username}: {e}")
-            update_status(status_label, "✓ Logged out", "#16a34a")
+        def worker():
+            status.flash("Logging out...", COLOR_MUTED)
+            success, message = session.logout_all()
+            status.flash(("✓ " if success else "● ") + message,
+                         COLOR_OK if success else COLOR_INFO)
 
-        thread = threading.Thread(target=_logout_thread, daemon=True)
-        thread.start()
+        threading.Thread(target=worker, name="setup-logout",
+                         daemon=True).start()
 
-    ttk.Button(
-        buttons_frame, text="Logout",
-        command=do_logout
-    ).pack(side="left", fill="x", expand=True, padx=(3, 3))
+    # -- primary buttons ---------------------------------------------
+    buttons_frame = ttk.Frame(frame)
+    buttons_frame.pack(fill="x", pady=(0, dp(5)))
 
-    ttk.Button(
-        buttons_frame, text="About",
-        command=lambda: open_about(root)
-    ).pack(side="right", fill="x", expand=True, padx=(3, 0))
+    ttk.Button(buttons_frame, text="Save & Connect",
+               command=save_and_connect).pack(
+        side="left", fill="x", expand=True, padx=(0, dp(3)))
+    ttk.Button(buttons_frame, text="Logout", command=do_logout).pack(
+        side="left", fill="x", expand=True, padx=(dp(3), dp(3)))
+    ttk.Button(buttons_frame, text="About",
+               command=lambda: open_about(window)).pack(
+        side="right", fill="x", expand=True, padx=(dp(3), 0))
 
-    # ── Management Buttons (shown only when credentials exist) ──
+    # -- management buttons ------------------------------------------
     mgmt_frame = ttk.Frame(frame)
 
     def _show_management_buttons():
-        """Show the Delete / Auto-Start management buttons."""
-        mgmt_frame.pack(fill="x", pady=(5, 5))
+        mgmt_frame.pack(fill="x", pady=(dp(5), dp(5)))
 
     def delete_credentials():
-        """Delete all saved credentials after confirmation."""
         confirm = messagebox.askyesno(
             "Delete Credentials",
             "Are you sure?\n\n"
-            "This will remove all saved accounts from\n"
-            "Windows Credential Manager."
-        )
+            "This removes all saved accounts from\n"
+            "Windows Credential Manager.")
         if not confirm:
             return
 
         delete_all_accounts()
-
-        # Reset config
-        save_config({
-            "setup_completed": False,
-            "startup_enabled": False
-        })
+        save_config({"setup_completed": False, "startup_enabled": False})
         remove_from_startup()
 
-        # Clear form fields
-        username1_entry.delete(0, tk.END)
-        password1_entry.delete(0, tk.END)
-        username2_entry.delete(0, tk.END)
-        password2_entry.delete(0, tk.END)
+        for row, _, _ in account_entries:
+            row.destroy()
+        account_entries.clear()
+        add_account_row()
         startup_var.set(True)
-
-        # Hide management buttons
         mgmt_frame.pack_forget()
 
-        update_status(status_label,
-                      "✓ Credentials deleted", "#16a34a")
+        status.flash("✓ Credentials deleted", COLOR_OK)
         log("All credentials deleted by user.")
 
     def toggle_auto_start():
-        """Toggle the auto-start Task Scheduler task."""
         if is_startup_enabled():
             remove_from_startup()
-            save_config({
-                "setup_completed": True,
-                "startup_enabled": False
-            })
+            save_config({"setup_completed": True, "startup_enabled": False})
             startup_var.set(False)
             auto_start_btn.config(text="Enable Auto-Start")
-            update_status(status_label,
-                          "Auto-start disabled", "#64748b")
+            status.flash("Auto-start disabled", COLOR_MUTED)
             log("Auto-start disabled by user.")
         else:
             add_to_startup()
-            save_config({
-                "setup_completed": True,
-                "startup_enabled": True
-            })
+            save_config({"setup_completed": True, "startup_enabled": True})
             startup_var.set(True)
             auto_start_btn.config(text="Disable Auto-Start")
-            update_status(status_label,
-                          "Auto-start enabled", "#16a34a")
+            status.flash("Auto-start enabled", COLOR_OK)
             log("Auto-start enabled by user.")
 
-    ttk.Button(
-        mgmt_frame, text="Delete Credentials",
-        command=delete_credentials
-    ).pack(side="left", fill="x", expand=True, padx=(0, 5))
+    ttk.Button(mgmt_frame, text="Delete Credentials",
+               command=delete_credentials).pack(
+        side="left", fill="x", expand=True, padx=(0, dp(5)))
 
-    auto_start_text = ("Disable Auto-Start"
-                       if is_startup_enabled()
-                       else "Enable Auto-Start")
     auto_start_btn = ttk.Button(
-        mgmt_frame, text=auto_start_text,
-        command=toggle_auto_start
+        mgmt_frame,
+        text="Disable Auto-Start" if is_startup_enabled()
+        else "Enable Auto-Start",
+        command=toggle_auto_start,
     )
-    auto_start_btn.pack(side="right", fill="x", expand=True, padx=(5, 0))
+    auto_start_btn.pack(side="right", fill="x", expand=True, padx=(dp(5), 0))
 
-    # Show management buttons if returning user
-    if is_returning_user and existing_accounts:
+    if is_returning_user and account_entries:
         _show_management_buttons()
 
-    # ── Footer ──
-    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
+    # -- footer ------------------------------------------------------
+    ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=dp(10))
 
     footer_frame = ttk.Frame(frame)
     footer_frame.pack(fill="x")
@@ -506,13 +575,53 @@ def run():
     footer_label = tk.Label(
         footer_frame,
         text=f"Developed by {metadata.AUTHOR}\n{metadata.COPYRIGHT}",
-        font=("Segoe UI", 9),
-        fg="blue",
-        cursor="hand2"
+        font=("Segoe UI", 9), fg="blue", cursor="hand2",
     )
     footer_label.pack()
-    footer_label.bind("<Button-1>", lambda e: open_about(root))
+    footer_label.bind("<Button-1>", lambda e: open_about(window))
 
-    # ── Final sizing and display ──
-    center_window(root, 380, 680)
+    status.start()
+    return status
+
+
+def open_window(parent: tk.Misc,
+                session: SessionManager | None = None) -> tk.Toplevel:
+    """
+    Open the management UI as a child window of an existing Tk application.
+
+    This is what the popup's "Settings…" uses. Creating a second `tk.Tk()`
+    in one process gives you two Tcl interpreters that cannot share widgets,
+    so a Toplevel is the only correct option once a root exists.
+    """
+    window = tk.Toplevel(parent)
+    status = build(window, session=session)
+    center_window(window, MAIN_W_DP, MAIN_H_DP, MAIN_MIN_W_DP, MAIN_MIN_H_DP)
+
+    def on_close():
+        status.stop()
+        window.destroy()
+
+    window.protocol("WM_DELETE_WINDOW", on_close)
+    window.lift()
+    window.focus_force()
+    return window
+
+
+def run(session: SessionManager | None = None):
+    """
+    Launch the setup / management window standalone.
+
+    DPI awareness is declared before `tk.Tk()` because Windows latches a
+    process's awareness mode when its first window appears — calling it
+    afterwards silently does nothing and the app renders blurry.
+    """
+    mode = ui_scale.enable_dpi_awareness()
+
+    root = tk.Tk()
+    ui_scale.init(root)
+    log(f"Setup window: DPI awareness via {mode}, "
+        f"scale {ui_scale.scale_factor():.2f}")
+
+    build(root, session=session)
+    center_window(root, MAIN_W_DP, MAIN_H_DP, MAIN_MIN_W_DP, MAIN_MIN_H_DP)
     root.mainloop()

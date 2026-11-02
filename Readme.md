@@ -20,6 +20,7 @@
 
 ## Table of Contents
 
+- [🚀 Version 3.0 Documentation & PRD](#-version-30-documentation--prd)
 - [The Story — Why I Built This](#the-story--why-i-built-this)
 - [How I Found the Solution](#how-i-found-the-solution)
 - [Problems I Faced & How I Solved Them](#problems-i-faced--how-i-solved-them)
@@ -33,6 +34,14 @@
 - [Privacy & Security](#privacy--security)
 - [Developer](#developer)
 - [License](#license)
+
+---
+
+## 🚀 Version 3.0 Documentation & PRD
+
+> Planning for Version 3.0 is underway! I've created a comprehensive **Learning Guide & PRD** that breaks down exactly how the new version works under the hood, the concepts it uses (like OS event hooks and multithreading), and even common interview questions about the architecture. 
+> 
+> **[👉 View the Complete V3 Learning Guide & PRD here](docs/V3_LEARNING_GUIDE.md)**
 
 ---
 
@@ -121,7 +130,7 @@ That's how a  script of few lines  turned into a full desktop application.
 
 **What happened:** Students often have their other devices connected to the same portal account. When the app tried to login , the portal rejected it with "You've reached the maximum login limit."
 
-**Solution:** I implemented a **smart credential failover** system. The app accepts two sets of credentials (Account 1 and Account 2). It always tries Account 1 first. If the portal response message contains keywords like "maximum login limit", the app immediately and automatically retries with Account 2 — no user intervention required.
+**Solution:** I implemented a **smart credential failover** system. The app accepts up to eight sets of credentials. It always tries Account 1 first and proceeds through the remaining accounts when the portal reports a maximum-login-limit error or another login failure.
 
 ---
 
@@ -228,7 +237,7 @@ The entire flow now completes in almost 4 seconds,depending on the OS and hardwa
 ## Features
 
 - **Zero-Touch Auto Login** — Runs silently at Windows startup, connects to the strongest MMMUT Wi-Fi, and logs in automatically.
-- **Smart Credential Failover** — If Account 1 hits the max login limit, instantly tries Account 2.
+- **Smart Credential Failover** — If an account hits the max login limit, tries the next saved account, up to eight accounts.
 - **Secure Password Storage** — Uses Windows Credential Manager (encrypted, OS-level security).
 - **Intelligent Wi-Fi Selection** — Scans all available MMMUT networks and picks the strongest signal.
 - **Live Status Display** — See real-time progress: detecting network → portal found → logging in → success.
@@ -280,7 +289,7 @@ Registry Run Key launches app.exe --background
     │ Failed / Max Limit
     ▼
 ┌─────────────────────────────┐
-│  POST login with Account 2   │──── Success (LIVE) ──► Exit ✓
+│  POST login with Accounts 2-8│──── Success (LIVE) ──► Exit ✓
 └─────────────────────────────┘
     │ Failed
     ▼
